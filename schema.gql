@@ -1,0 +1,16 @@
+type User {
+  id: ID!
+  userId: String!
+  name: String!
+  questionForSearch: String!
+  answerForSearch: String!
+}
+
+type Query {
+  signUp(userId: String!, password: String!, name: String!, questionForSearch: String!, answerForSearch: String!): User
+  signIn(id: String!, password: String!): String
+}
+
+type Mutation {
+  deleteUser(id: ID!): Boolean
+}
