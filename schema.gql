@@ -2,8 +2,17 @@ type User {
   id: ID!
   userId: String!
   name: String!
+  roles: [AuthRole]
   questionForSearch: String!
   answerForSearch: String!
+}
+
+enum AuthRole {
+  """일반사용자"""
+  ADMIN_USER
+
+  """개발자(전체권한)"""
+  ADMIN_DEVELOPER
 }
 
 type Query {

@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { Field, ObjectType } from 'graphst';
 import {
   BaseEntity,
@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { AuthRole, GraphQLAuthRole } from './types';
 
 @Entity()
 @Unique(['userId'])
@@ -27,11 +28,12 @@ export class User extends BaseEntity {
   @Column({ type: String })
   name!: string;
 
+  @Field(() => GraphQLList(GraphQLAuthRole))
   @Column({
     type: 'json',
     default: null,
   })
-  roles!: string[] | null;
+  roles!: AuthRole[] | null;
 
   @Field(() => GraphQLNonNull(GraphQLString))
   @Column({

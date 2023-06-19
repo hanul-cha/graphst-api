@@ -8,7 +8,7 @@ export class JwtMiddleware implements MiddlewareInterface {
 
   handle(
     props: GraphstProps,
-    next: (context?: GraphstProps | undefined) => void
+    next: (props?: GraphstProps | undefined) => void
   ): void | Promise<void> {
     const ignorePaths = ['signIn', 'signUp'];
     if (ignorePaths.some((path) => path === props.info.fieldName)) {
