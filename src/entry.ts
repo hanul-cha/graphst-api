@@ -1,6 +1,7 @@
 import { GraphstServer } from 'graphst';
 import { DataSource } from 'typeorm';
 import { UserResolver } from './user/user.resolver';
+import { JwtMiddleware } from './jwt/jwt.middleware';
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -30,6 +31,7 @@ const server = new GraphstServer({
     },
   ],
   resolvers: [UserResolver],
+  middlewares: [JwtMiddleware],
 });
 
 server.start(4000, () => {
