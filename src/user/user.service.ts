@@ -34,10 +34,8 @@ export class UserService {
     } catch (err: any) {
       if (err.code === 'ER_DUP_ENTRY') {
         throw new Error('이미 사용중인 아이디 입니다.');
-        // throw new ApolloError('중복된 아이디 입니다.', 'ER_DUP_ENTRY');
       } else {
         throw new Error(err);
-        // throw new ApolloError(err);
       }
     }
 

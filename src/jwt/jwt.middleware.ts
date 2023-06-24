@@ -15,14 +15,22 @@ export class JwtMiddleware implements MiddlewareInterface {
       return next();
     }
 
-    if (!props.context.req.headers.authorization) {
-      throw new Error('토큰이 없습니다.');
+    const authorization = props.context.req.headers.authorization;
+
+    if (!authorization) {
+      throw new Error('token is not exist');
     }
+    const token = authorization.replace('Bearer ', '');
 
-    this.jwtService.verify(props.context.req.headers.authorization);
+    const decodedToken = this.jwtService.verify(token);
+    const propWithAuth = {
+      ...props,
+      context: {
+        ...props.context,
+        auth: decodedToken,
+      },
+    };
 
-    // TODO: 토큰 검증 후 사용자 info를 복호화해 context에 추가해주어야함
-
-    return next();
+    return next(propWithAuth);
   }
 }
