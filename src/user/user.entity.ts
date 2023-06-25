@@ -7,7 +7,12 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { AuthRole, GraphQLAuthRole } from './types';
+import {
+  AuthQuestion,
+  AuthRole,
+  GraphQLAuthQuestion,
+  GraphQLAuthRole,
+} from './types';
 
 @Entity()
 @Unique(['userId'])
@@ -35,12 +40,12 @@ export class User extends BaseEntity {
   })
   roles!: AuthRole[] | null;
 
-  @Field(() => GraphQLNonNull(GraphQLString))
+  @Field(() => GraphQLNonNull(GraphQLAuthQuestion))
   @Column({
     type: String,
     name: 'question_for_search',
   })
-  questionForSearch!: string;
+  questionForSearch!: AuthQuestion;
 
   @Field(() => GraphQLNonNull(GraphQLString))
   @Column({

@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { UserService } from './user.service';
+import { AuthQuestion, GraphQLAuthQuestion } from './types';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -16,9 +17,49 @@ export class UserResolver {
   @Query({
     args: {
       userId: () => GraphQLNonNull(GraphQLString),
+      questionForSearch: () => GraphQLNonNull(GraphQLAuthQuestion),
+      answerForSearch: () => GraphQLNonNull(GraphQLString),
+    },
+    returnType: () => GraphQLBoolean,
+  })
+  async validateQuestion(
+    _: null,
+    args: {
+      userId: string;
+      questionForSearch: AuthQuestion;
+      answerForSearch: string;
+    }
+  ): Promise<boolean> {
+    const { userId, questionForSearch, answerForSearch } = args;
+
+    return this.userService.validateQuestion(
+      userId,
+      questionForSearch,
+      answerForSearch
+    );
+  }
+
+  @Query({
+    args: {
+      userId: () => GraphQLNonNull(GraphQLString),
+      password: () => GraphQLNonNull(GraphQLString),
+    },
+    returnType: () => GraphQLBoolean,
+  })
+  async changePassword(_: null, args: { userId: string; password: string }) {
+    const { userId, password } = args;
+
+    await this.userService.changePassword(userId, password);
+
+    return true;
+  }
+
+  @Mutation({
+    args: {
+      userId: () => GraphQLNonNull(GraphQLString),
       password: () => GraphQLNonNull(GraphQLString),
       name: () => GraphQLNonNull(GraphQLString),
-      questionForSearch: () => GraphQLNonNull(GraphQLString),
+      questionForSearch: () => GraphQLNonNull(GraphQLAuthQuestion),
       answerForSearch: () => GraphQLNonNull(GraphQLString),
     },
     returnType: () => User,
@@ -29,14 +70,14 @@ export class UserResolver {
       userId: string;
       password: string;
       name: string;
-      questionForSearch: string;
+      questionForSearch: AuthQuestion;
       answerForSearch: string;
     }
   ): Promise<User> {
     return this.userService.createUser(args);
   }
 
-  @Query({
+  @Mutation({
     args: {
       id: () => GraphQLNonNull(GraphQLString),
       password: () => GraphQLNonNull(GraphQLString),

@@ -3,7 +3,7 @@ type User {
   userId: String!
   name: String!
   roles: [AuthRole]
-  questionForSearch: String!
+  questionForSearch: AuthQuestion!
   answerForSearch: String!
 }
 
@@ -15,11 +15,33 @@ enum AuthRole {
   ADMIN_DEVELOPER
 }
 
+enum AuthQuestion {
+  """가장 좋아하는 음식은?"""
+  FAVORITE_FOOD
+
+  """가장 좋아하는 영화는?"""
+  FAVORITE_MOVIE
+
+  """가장 좋아하는 운동은?"""
+  FAVORITE_SPORTS
+
+  """가장 좋아하는 동물은?"""
+  FAVORITE_ANIMAL
+
+  """가장 좋아하는 색깔은?"""
+  FAVORITE_COLOR
+
+  """가장 좋아하는 숫자는?"""
+  FAVORITE_NUMBER
+}
+
 type Query {
-  signUp(userId: String!, password: String!, name: String!, questionForSearch: String!, answerForSearch: String!): User
-  signIn(id: String!, password: String!): String
+  validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
+  changePassword(userId: String!, password: String!): Boolean
 }
 
 type Mutation {
+  signUp(userId: String!, password: String!, name: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): User
+  signIn(id: String!, password: String!): String
   deleteUser(id: ID!): Boolean
 }
