@@ -12,7 +12,7 @@ import {
   AuthRole,
   GraphQLAuthQuestion,
   GraphQLAuthRole,
-} from './types';
+} from './user.types';
 
 @Entity()
 @Unique(['userId'])

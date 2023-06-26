@@ -7,7 +7,8 @@ import {
   GraphQLString,
 } from 'graphql';
 import { UserService } from './user.service';
-import { AuthQuestion, GraphQLAuthQuestion } from './types';
+import { AuthQuestion, AuthRole, GraphQLAuthQuestion } from './user.types';
+import { createRolesMiddleware } from './user.middleware';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -98,6 +99,7 @@ export class UserResolver {
     args: {
       id: () => GraphQLNonNull(GraphQLID),
     },
+    middlewares: [createRolesMiddleware([AuthRole.DEVELOPER])],
     returnType: () => GraphQLBoolean,
   })
   async deleteUser(_: null, args: { id: number }) {

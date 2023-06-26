@@ -9,10 +9,10 @@ type User {
 
 enum AuthRole {
   """일반사용자"""
-  ADMIN_USER
+  USER
 
   """개발자(전체권한)"""
-  ADMIN_DEVELOPER
+  DEVELOPER
 }
 
 enum AuthQuestion {

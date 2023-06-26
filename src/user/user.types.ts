@@ -1,32 +1,32 @@
 import { GraphQLEnumType } from 'graphql';
 
 export enum AuthRole {
-  ADMIN_USER = 'admin::user', // 일반사용자
+  USER = 'user',
 
-  ADMIN_DEVELOPER = 'admin::developer', // 개발자 (전체권한)
+  DEVELOPER = 'developer',
 }
 
 export const GraphQLAuthRole = new GraphQLEnumType({
   name: 'AuthRole',
   values: {
-    ADMIN_USER: {
-      value: AuthRole.ADMIN_USER,
+    USER: {
+      value: AuthRole.USER,
       description: '일반사용자',
     },
-    ADMIN_DEVELOPER: {
-      value: AuthRole.ADMIN_DEVELOPER,
+    DEVELOPER: {
+      value: AuthRole.DEVELOPER,
       description: '개발자(전체권한)',
     },
   },
 });
 
 export enum AuthQuestion {
-  FAVORITE_FOOD = 'favorite_food', // 가장 좋아하는 음식은?
-  FAVORITE_MOVIE = 'favorite_movie', // 가장 좋아하는 영화는?
-  FAVORITE_SPORTS = 'favorite_sports', // 가장 좋아하는 운동은?
-  FAVORITE_ANIMAL = 'favorite_animal', // 가장 좋아하는 동물은?
-  FAVORITE_COLOR = 'favorite_color', // 가장 좋아하는 색깔은?
-  FAVORITE_NUMBER = 'favorite_number', // 가장 좋아하는 숫자는?
+  FAVORITE_FOOD = 'favorite_food',
+  FAVORITE_MOVIE = 'favorite_movie',
+  FAVORITE_SPORTS = 'favorite_sports',
+  FAVORITE_ANIMAL = 'favorite_animal',
+  FAVORITE_COLOR = 'favorite_color',
+  FAVORITE_NUMBER = 'favorite_number',
 }
 
 export const GraphQLAuthQuestion = new GraphQLEnumType({

@@ -10,7 +10,12 @@ export class JwtMiddleware implements MiddlewareInterface {
     props: GraphstProps,
     next: (props?: GraphstProps | undefined) => void
   ): void | Promise<void> {
-    const ignorePaths = ['signIn', 'signUp', 'queryTest'];
+    const ignorePaths = [
+      'signIn',
+      'signUp',
+      'validateQuestion',
+      'changePassword',
+    ];
     if (ignorePaths.some((path) => path === props.info.fieldName)) {
       return next();
     }

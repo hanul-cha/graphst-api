@@ -2,7 +2,7 @@ import { Inject, Injectable } from 'graphst';
 import { DataSource } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
-import { AuthQuestion, AuthRole } from './types';
+import { AuthQuestion, AuthRole } from './user.types';
 import { JwtService } from '../jwt/jwt.service';
 
 @Injectable()
@@ -74,7 +74,7 @@ export class UserService {
     const user = this.dataSource.manager.create(User, {
       ...input,
       password: await this.createPassword(input.password),
-      roles: [AuthRole.ADMIN_USER],
+      roles: [AuthRole.USER],
     });
 
     try {
