@@ -36,6 +36,7 @@ enum AuthQuestion {
 }
 
 type Query {
+  getUser: User
   validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
   changePassword(userId: String!, password: String!): Boolean
 }

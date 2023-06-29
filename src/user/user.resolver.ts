@@ -9,11 +9,19 @@ import {
 import { UserService } from './user.service';
 import { AuthQuestion, AuthRole, GraphQLAuthQuestion } from './user.types';
 import { createRolesMiddleware } from './user.middleware';
+import { AuthContext } from '../types';
 
 @Resolver(() => User)
 export class UserResolver {
   @Inject(() => UserService)
   userService!: UserService;
+
+  @Query({
+    returnType: () => User,
+  })
+  async getUser(_: null, __: null, context: AuthContext) {
+    return this.userService.getUser(`${context.auth.id}`);
+  }
 
   @Query({
     args: {

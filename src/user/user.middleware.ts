@@ -1,13 +1,13 @@
 import { Injectable, MiddlewareInterface } from 'graphst';
-import { AuthContext } from '../types';
+import { GraphstApiProps } from '../types';
 import { AuthRole } from './user.types';
 
 export function createRolesMiddleware(roles: AuthRole[]) {
   @Injectable()
   class RolesMiddleware implements MiddlewareInterface {
     handle(
-      props: AuthContext,
-      next: (props?: AuthContext | undefined) => void
+      props: GraphstApiProps,
+      next: (props?: GraphstApiProps | undefined) => void
     ): void | Promise<void> {
       const userRoles = props.context.auth.roles;
       if (
