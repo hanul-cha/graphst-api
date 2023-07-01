@@ -13,10 +13,10 @@ export class UserService {
   @Inject(() => JwtService)
   jwtService!: JwtService;
 
-  async getUser(userId: string): Promise<User> {
+  async getUser(id: number): Promise<User> {
     return this.dataSource.manager.findOneOrFail(User, {
       where: {
-        userId,
+        id,
       },
     });
   }

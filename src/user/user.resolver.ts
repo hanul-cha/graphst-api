@@ -20,7 +20,7 @@ export class UserResolver {
     returnType: () => User,
   })
   async getUser(_: null, __: null, context: AuthContext) {
-    return this.userService.getUser(`${context.auth.id}`);
+    return this.userService.getUser(context.auth.id);
   }
 
   @Query({

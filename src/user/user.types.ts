@@ -21,12 +21,12 @@ export const GraphQLAuthRole = new GraphQLEnumType({
 });
 
 export enum AuthQuestion {
-  FAVORITE_FOOD = 'favorite_food',
-  FAVORITE_MOVIE = 'favorite_movie',
-  FAVORITE_SPORTS = 'favorite_sports',
-  FAVORITE_ANIMAL = 'favorite_animal',
-  FAVORITE_COLOR = 'favorite_color',
-  FAVORITE_NUMBER = 'favorite_number',
+  FAVORITE_FOOD = 'FAVORITE_FOOD',
+  FAVORITE_MOVIE = 'FAVORITE_MOVIE',
+  FAVORITE_SPORTS = 'FAVORITE_SPORTS',
+  FAVORITE_ANIMAL = 'FAVORITE_ANIMAL',
+  FAVORITE_COLOR = 'FAVORITE_COLOR',
+  FAVORITE_NUMBER = 'FAVORITE_NUMBER',
 }
 
 export const GraphQLAuthQuestion = new GraphQLEnumType({
