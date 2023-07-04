@@ -5,6 +5,15 @@ type User {
   roles: [AuthRole]
   questionForSearch: AuthQuestion!
   answerForSearch: String!
+  countFollower: Int!
+  countFollowing: Int!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  contents: String!
+  countLike: Int!
 }
 
 enum AuthRole {
@@ -37,11 +46,11 @@ enum AuthQuestion {
 
 type Query {
   getUser: User
-  validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
-  changePassword(userId: String!, password: String!): Boolean
 }
 
 type Mutation {
+  validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
+  changePassword(userId: String!, password: String!): Boolean
   signUp(userId: String!, password: String!, name: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): User
   signIn(id: String!, password: String!): String
   deleteUser(id: ID!): Boolean

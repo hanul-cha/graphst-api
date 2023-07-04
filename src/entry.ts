@@ -2,6 +2,7 @@ import { GraphstServer } from 'graphst';
 import { DataSource } from 'typeorm';
 import { UserResolver } from './user/user.resolver';
 import { JwtMiddleware } from './jwt/jwt.middleware';
+import { LikeResolver } from './like/like.reolver';
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -30,7 +31,7 @@ const server = new GraphstServer({
       instance: dataSource,
     },
   ],
-  resolvers: [UserResolver],
+  resolvers: [UserResolver, LikeResolver],
   middlewares: [JwtMiddleware],
 });
 

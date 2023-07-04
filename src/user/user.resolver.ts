@@ -23,7 +23,7 @@ export class UserResolver {
     return this.userService.getUser(context.auth.id);
   }
 
-  @Query({
+  @Mutation({
     args: {
       userId: () => GraphQLNonNull(GraphQLString),
       questionForSearch: () => GraphQLNonNull(GraphQLAuthQuestion),
@@ -48,7 +48,7 @@ export class UserResolver {
     );
   }
 
-  @Query({
+  @Mutation({
     args: {
       userId: () => GraphQLNonNull(GraphQLString),
       password: () => GraphQLNonNull(GraphQLString),
@@ -57,7 +57,6 @@ export class UserResolver {
   })
   async changePassword(_: null, args: { userId: string; password: string }) {
     const { userId, password } = args;
-
     await this.userService.changePassword(userId, password);
 
     return true;
