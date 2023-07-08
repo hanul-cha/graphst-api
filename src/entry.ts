@@ -2,7 +2,7 @@ import { GraphstServer } from 'graphst';
 import { DataSource } from 'typeorm';
 import { UserResolver } from './user/user.resolver';
 import { JwtMiddleware } from './jwt/jwt.middleware';
-import { LikeResolver } from './like/like.reolver';
+import { LikeResolver } from './like/like.resolver';
 
 const dataSource = new DataSource({
   type: 'mysql',

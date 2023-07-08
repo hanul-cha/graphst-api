@@ -1,4 +1,11 @@
-import { Inject, Mutation, Query, Resolver } from 'graphst';
+import {
+  FieldResolver,
+  Inject,
+  Mutation,
+  Query,
+  Resolver,
+  getObjectSchema,
+} from 'graphst';
 import { User } from './user.entity';
 import {
   GraphQLBoolean,
@@ -10,6 +17,7 @@ import { UserService } from './user.service';
 import { AuthQuestion, AuthRole, GraphQLAuthQuestion } from './user.types';
 import { createRolesMiddleware } from './user.middleware';
 import { AuthContext } from '../types';
+import { Post } from '../post/post.entity';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -111,5 +119,14 @@ export class UserResolver {
   })
   async deleteUser(_: null, args: { id: number }) {
     return this.userService.deleteUser(args.id);
+  }
+
+  @FieldResolver({
+    parent: () => Post,
+    returnType: () => GraphQLNonNull(getObjectSchema(User)),
+    name: 'user',
+  })
+  async userByPost(parent: Post): Promise<User> {
+    return this.userService.getUser(+parent.userId);
   }
 }

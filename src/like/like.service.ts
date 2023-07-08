@@ -1,6 +1,7 @@
 import { Inject, Injectable } from 'graphst';
 import { LikeTargetType } from './like.types';
 import { DataSource, Like } from 'typeorm';
+import { User } from '../user/user.entity';
 
 // TODO: dataloader
 @Injectable()
@@ -24,5 +25,17 @@ export class LikeService {
         targetId,
       },
     });
+  }
+
+  async likeUsers(targetType: LikeTargetType, targetId: string) {
+    const qb = this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(User, 'User');
+    return qb
+      .innerJoin(Like, 'Like', 'Like.userId = User.id')
+      .where('Like.targetType = :targetType', { targetType })
+      .andWhere('Like.targetId = :targetId', { targetId })
+      .select('User')
+      .getMany();
   }
 }

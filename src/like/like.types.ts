@@ -1,4 +1,4 @@
 export enum LikeTargetType {
-  User = 'user',
-  Post = 'post',
+  User = 'User',
+  Post = 'Post',
 }
