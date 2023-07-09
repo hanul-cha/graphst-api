@@ -55,4 +55,6 @@ type Mutation {
   signUp(userId: String!, password: String!, name: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): User
   signIn(id: String!, password: String!): String
   deleteUser(id: ID!): Boolean
+  toggleLikeUser(targetId: String!, like: Boolean!): Boolean
+  toggleLikePost(targetId: String!, like: Boolean!): Boolean
 }

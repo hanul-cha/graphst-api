@@ -6,10 +6,11 @@ import {
   Unique,
 } from 'typeorm';
 import { LikeTargetType } from './like.types';
+import { Injectable } from 'graphst';
 
 @Entity()
-@Unique(['id'])
 @Unique(['targetId', 'targetType', 'userId'])
+@Injectable()
 export class Like extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
