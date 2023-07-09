@@ -33,7 +33,7 @@ export class User extends BaseEntity {
   @Column({ type: String })
   name!: string;
 
-  @Field(() => GraphQLList(GraphQLAuthRole))
+  @Field(() => GraphQLList(GraphQLNonNull(GraphQLAuthRole)))
   @Column({
     type: 'json',
     default: null,

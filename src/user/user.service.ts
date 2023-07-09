@@ -1,9 +1,11 @@
 import { Inject, Injectable } from 'graphst';
-import { DataSource } from 'typeorm';
+import { Brackets, DataSource, Like, SelectQueryBuilder } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
-import { AuthQuestion, AuthRole } from './user.types';
+import { AuthQuestion, AuthRole, UsersOptions } from './user.types';
 import { JwtService } from '../jwt/jwt.service';
+import { PageOption, paginate } from '../utils/pagination';
+import { LikeTargetType } from '../like/like.types';
 
 @Injectable()
 export class UserService {
@@ -12,6 +14,53 @@ export class UserService {
 
   @Inject(() => JwtService)
   jwtService!: JwtService;
+
+  async userPagination(
+    pageOptions?: PageOption | null,
+    usersOptions?: UsersOptions
+  ) {
+    const qb = this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(User, 'User');
+
+    if (usersOptions?.followerId) {
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.where((qb: SelectQueryBuilder<User>) => {
+            const userIdSubQuery = qb
+              .subQuery()
+              .select('Like.user_id')
+              .from(Like, 'Like')
+              .where('Like.target_type = :targetType', {
+                targetType: LikeTargetType.User,
+              })
+              .andWhere('Like.target_id = :targetId', {
+                targetId: usersOptions.followerId,
+              });
+
+            qb.andWhere(`User.id IN ${userIdSubQuery.getQuery()}`);
+          });
+        })
+      );
+    }
+
+    if (usersOptions?.followingId) {
+      const userIdSubQuery = qb
+        .subQuery()
+        .select('Like.target_id')
+        .from(Like, 'Like')
+        .where('Like.target_type = :targetType', {
+          targetType: LikeTargetType.User,
+        })
+        .andWhere('Like.user_id = :userId', {
+          userId: usersOptions.followingId,
+        });
+
+      qb.andWhere(`User.id IN ${userIdSubQuery.getQuery()}`);
+    }
+
+    return paginate(qb, pageOptions);
+  }
 
   async getUser(id: number): Promise<User> {
     return this.dataSource.manager.findOneOrFail(User, {

@@ -8,44 +8,77 @@ type Post {
 
 enum AuthRole {
   """일반사용자"""
-  USER
+  user
 
   """개발자(전체권한)"""
-  DEVELOPER
+  developer
 }
 
 enum AuthQuestion {
   """가장 좋아하는 음식은?"""
-  FAVORITE_FOOD
+  favorite_food
 
   """가장 좋아하는 영화는?"""
-  FAVORITE_MOVIE
+  favorite_movie
 
   """가장 좋아하는 운동은?"""
-  FAVORITE_SPORTS
+  favorite_sports
 
   """가장 좋아하는 동물은?"""
-  FAVORITE_ANIMAL
+  favorite_animal
 
   """가장 좋아하는 색깔은?"""
-  FAVORITE_COLOR
+  favorite_color
 
   """가장 좋아하는 숫자는?"""
-  FAVORITE_NUMBER
+  favorite_number
 }
 
 type User {
   id: ID!
   userId: String!
   name: String!
-  roles: [AuthRole]
+  roles: [AuthRole!]
   questionForSearch: AuthQuestion!
   answerForSearch: String!
   countFollower: Int!
   countFollowing: Int!
 }
 
+input PageOptionInput {
+  perPage: Int
+  page: Int
+  after: String
+  order: orderInput
+}
+
+input orderInput {
+  column: String!
+  asc: String!
+}
+
+input UsersOptionsInput {
+  """해당 아이디가 팔로우 하고 있는 유저들을 필터링"""
+  followingId: String
+
+  """해당 아이디를 팔로우 하고 있는 유저들을 필터링"""
+  followerId: String
+}
+
+type userPaginate {
+  totalCount: Int!
+  nodes: [User!]!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  startPath: String!
+  endPath: String!
+}
+
 type Query {
+  users(pageOptions: PageOptionInput, userOptions: UsersOptionsInput): userPaginate
   getUser: User
 }
 

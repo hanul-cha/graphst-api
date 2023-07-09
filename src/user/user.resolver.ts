@@ -14,15 +14,41 @@ import {
   GraphQLString,
 } from 'graphql';
 import { UserService } from './user.service';
-import { AuthQuestion, AuthRole, GraphQLAuthQuestion } from './user.types';
+import {
+  AuthQuestion,
+  AuthRole,
+  GraphQLAuthQuestion,
+  GraphqlUsersOptions,
+  UsersOptions,
+} from './user.types';
 import { createRolesMiddleware } from './user.middleware';
 import { AuthContext } from '../types';
 import { Post } from '../post/post.entity';
+import {
+  GraphqlPageOptionInput,
+  GraphqlPaginate,
+  PageOption,
+  Paginate,
+} from '../utils/pagination';
 
 @Resolver(() => User)
 export class UserResolver {
   @Inject(() => UserService)
   userService!: UserService;
+
+  @Query({
+    args: {
+      pageOptions: () => GraphqlPageOptionInput,
+      userOptions: () => GraphqlUsersOptions,
+    },
+    returnType: () => GraphqlPaginate(User, 'user'),
+  })
+  async users(
+    _: null,
+    args: { pageOptions?: PageOption | null; userOptions?: UsersOptions }
+  ): Promise<Paginate<User>> {
+    return this.userService.userPagination(args.pageOptions, args.userOptions);
+  }
 
   @Query({
     returnType: () => User,

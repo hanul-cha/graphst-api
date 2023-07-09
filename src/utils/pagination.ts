@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -31,6 +32,24 @@ export interface PageOption {
   order?: { column: string; asc: boolean };
 }
 
+export const GraphqlPageOptionOrderInput = new GraphQLInputObjectType({
+  name: 'orderInput',
+  fields: {
+    column: { type: GraphQLNonNull(GraphQLString) },
+    asc: { type: GraphQLNonNull(GraphQLString) },
+  },
+});
+
+export const GraphqlPageOptionInput = new GraphQLInputObjectType({
+  name: 'PageOptionInput',
+  fields: {
+    perPage: { type: GraphQLInt },
+    page: { type: GraphQLInt },
+    after: { type: GraphQLString },
+    order: { type: GraphqlPageOptionOrderInput },
+  },
+});
+
 export interface Paginate<TEntity extends ObjectLiteral> {
   totalCount: number;
   nodes: TEntity[];
@@ -54,29 +73,33 @@ export function GraphqlPaginate<o extends Function>(type: o, name: string) {
 
 export async function paginate<TEntity extends ObjectLiteral>(
   qb: SelectQueryBuilder<TEntity>,
-  option: PageOption
+  option?: PageOption | null
 ): Promise<Paginate<TEntity>> {
   const totalCount = await qb.clone().getCount();
 
-  const perPage = Math.min(option.perPage ?? 20, 100);
-  const page = Math.min(option.page ?? 1);
+  const perPage = Math.min(option?.perPage ?? 20, 100);
+  const page = Math.min(option?.page ?? 1);
   const nodeQuery = qb.clone();
+  const nodeQuery2 = qb.clone();
 
   const nodes = await nodeQuery
     .take(perPage)
     .skip(perPage * (page - 1))
     .getMany();
 
-  const nextPageLength = await nodeQuery
-    .take(1)
-    .skip(perPage * page)
-    .getCount();
+  const hasNextPage =
+    (
+      await nodeQuery2
+        .skip(perPage * page)
+        .take(1)
+        .getMany()
+    ).length > 0;
 
   return {
     totalCount,
     nodes,
     pageInfo: {
-      hasNextPage: nextPageLength > 0,
+      hasNextPage,
       startPath: '',
       endPath: '',
     },

@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -10,6 +11,9 @@ import { Injectable } from 'graphst';
 
 @Entity()
 @Unique(['targetId', 'targetType', 'userId'])
+@Index(['targetType'])
+@Index(['userId'])
+@Index(['targetId'])
 @Injectable()
 export class Like extends BaseEntity {
   @PrimaryGeneratedColumn()
