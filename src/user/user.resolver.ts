@@ -51,7 +51,7 @@ export class UserResolver {
   }
 
   @Query({
-    returnType: () => User,
+    returnType: () => GraphQLNonNull(getObjectSchema(User)),
   })
   async getUser(_: null, __: null, context: AuthContext) {
     return this.userService.getUser(context.auth.id);

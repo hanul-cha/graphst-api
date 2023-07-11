@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { UserResolver } from './user/user.resolver';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { LikeResolver } from './like/like.resolver';
+import { PostResolver } from './post/post.resolver';
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -22,20 +23,21 @@ dataSource
   })
   .catch((err) => {
     console.error('Error during Data Source initialization', err);
+  })
+  .finally(() => {
+    const server = new GraphstServer({
+      providers: [
+        {
+          key: DataSource,
+          instance: dataSource,
+        },
+      ],
+      resolvers: [UserResolver, LikeResolver, PostResolver],
+      middlewares: [JwtMiddleware],
+    });
+
+    server.start(4000, () => {
+      console.log('Server start port: 4000');
+      console.log('Happy Hacking! 🚀🚀🚀');
+    });
   });
-
-const server = new GraphstServer({
-  providers: [
-    {
-      key: DataSource,
-      instance: dataSource,
-    },
-  ],
-  resolvers: [UserResolver, LikeResolver],
-  middlewares: [JwtMiddleware],
-});
-
-server.start(4000, () => {
-  console.log('Server start port: 4000');
-  console.log('Happy Hacking! 🚀🚀🚀');
-});
