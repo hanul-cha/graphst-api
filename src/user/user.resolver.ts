@@ -54,7 +54,14 @@ export class UserResolver {
     returnType: () => GraphQLNonNull(getObjectSchema(User)),
   })
   async getUser(_: null, __: null, context: AuthContext) {
-    return this.userService.getUser(context.auth.id);
+    const user = await this.userService.getUserByUserIdLoader.load(
+      context.auth.id
+    );
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
   }
 
   @Mutation({
@@ -153,6 +160,13 @@ export class UserResolver {
     name: 'user',
   })
   async userByPost(parent: Post): Promise<User> {
-    return this.userService.getUser(+parent.userId);
+    const user = await this.userService.getUserByUserIdLoader.load(
+      +parent.userId
+    );
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
   }
 }

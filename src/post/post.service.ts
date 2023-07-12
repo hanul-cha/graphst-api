@@ -7,8 +7,8 @@ export class PostService {
   @Inject(() => DataSource)
   dataSource!: DataSource;
 
-  async getPost(id: number): Promise<Post> {
-    return this.dataSource.manager.findOneOrFail(Post, {
+  async getPost(id: number): Promise<Post | null> {
+    return this.dataSource.manager.findOne(Post, {
       where: {
         id,
       },

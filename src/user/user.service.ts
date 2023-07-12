@@ -1,11 +1,12 @@
 import { Inject, Injectable } from 'graphst';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
 import { AuthQuestion, AuthRole, UsersOptions } from './user.types';
 import { JwtService } from '../jwt/jwt.service';
 import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
+import DataLoader from 'dataloader';
 
 @Injectable()
 export class UserService {
@@ -14,6 +15,24 @@ export class UserService {
 
   @Inject(() => JwtService)
   jwtService!: JwtService;
+
+  getUserByUserIdLoader: DataLoader<number, User | null>;
+
+  constructor() {
+    this.getUserByUserIdLoader = new DataLoader(this._getUsers.bind(this), {
+      cache: false,
+    });
+  }
+
+  async _getUsers(ids: readonly number[]): Promise<(User | null)[]> {
+    const users = await this.dataSource.manager.find(User, {
+      where: {
+        id: In([...new Set(ids)]),
+      },
+    });
+
+    return ids.map((id) => users.find((user) => user.id === id) || null);
+  }
 
   async userPagination(
     pageOptions?: PageOption | null,
@@ -30,14 +49,6 @@ export class UserService {
     }
 
     return paginate(qb, pageOptions);
-  }
-
-  async getUser(id: number): Promise<User> {
-    return this.dataSource.manager.findOneOrFail(User, {
-      where: {
-        id,
-      },
-    });
   }
 
   async validateQuestion(

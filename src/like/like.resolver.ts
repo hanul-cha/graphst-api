@@ -72,10 +72,10 @@ export class LikeResolver {
     returnType: () => GraphQLNonNull(GraphQLInt),
   })
   async countFollower(parent: User): Promise<number> {
-    return this.likeService.countLikeByTarget(
-      LikeTargetType.User,
-      `${parent.id}`
-    );
+    return this.likeService.countLikeByTargetLoader.load({
+      targetType: LikeTargetType.User,
+      targetId: `${parent.id}`,
+    });
   }
 
   @FieldResolver({
@@ -83,10 +83,10 @@ export class LikeResolver {
     returnType: () => GraphQLNonNull(GraphQLInt),
   })
   async countFollowing(parent: User): Promise<number> {
-    return this.likeService.countLikeByUser(
-      LikeTargetType.User,
-      `${parent.id}`
-    );
+    return this.likeService.countLikeByUserLoader.load({
+      targetType: LikeTargetType.User,
+      userId: `${parent.id}`,
+    });
   }
 
   @FieldResolver({
@@ -95,9 +95,9 @@ export class LikeResolver {
     name: 'countLike',
   })
   async countLikeByPost(parent: Post): Promise<number> {
-    return this.likeService.countLikeByTarget(
-      LikeTargetType.User,
-      `${parent.id}`
-    );
+    return this.likeService.countLikeByTargetLoader.load({
+      targetType: LikeTargetType.Post,
+      targetId: `${parent.id}`,
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Inject, Query, Resolver, getObjectSchema } from 'graphst';
+import { Inject, Query, Resolver } from 'graphst';
 import { Post } from './post.entity';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { PostService } from './post.service';
@@ -12,7 +12,7 @@ export class PostResolver {
     args: {
       id: () => GraphQLNonNull(GraphQLID),
     },
-    returnType: () => GraphQLNonNull(getObjectSchema(Post)),
+    returnType: () => Post,
   })
   async getPost(_: null, args: { id: number }) {
     return this.postService.getPost(args.id);

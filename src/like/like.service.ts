@@ -3,28 +3,124 @@ import { LikeTargetType } from './like.types';
 import { DataSource } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Like } from './like.entity';
+import DataLoader from 'dataloader';
 
-// TODO: dataloader
+interface CountLikeByUserLoaderKey {
+  targetType: LikeTargetType;
+  userId: string;
+}
+
+interface CountLikeByTargetLoaderKey {
+  targetType: LikeTargetType;
+  targetId: string;
+}
+
 @Injectable()
 export class LikeService {
   @Inject(() => DataSource)
   dataSource!: DataSource;
 
-  async countLikeByUser(targetType: LikeTargetType, userId: string) {
-    return this.dataSource.manager.count(Like, {
-      where: {
-        targetType,
-        userId,
-      },
+  countLikeByUserLoader: DataLoader<CountLikeByUserLoaderKey, number>;
+  countLikeByTargetLoader: DataLoader<CountLikeByTargetLoaderKey, number>;
+
+  constructor() {
+    this.countLikeByUserLoader = new DataLoader(
+      this._countLikeByUser.bind(this),
+      { cache: false }
+    );
+    this.countLikeByTargetLoader = new DataLoader(
+      this._countLikeByTarget.bind(this),
+      { cache: false }
+    );
+  }
+
+  async _countLikeByUser(
+    keys: readonly CountLikeByUserLoaderKey[]
+  ): Promise<number[]> {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    const targetTypes = new Set(keys.map((key) => key.targetType));
+    const userIds = new Set(keys.map((key) => key.userId));
+
+    const qb = this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(Like, 'Like')
+      .select([
+        'Like.target_type as targetType',
+        'Like.user_id as userId',
+        'count(*) as count',
+      ])
+      .andWhere('Like.target_type IN (:...targetTypes)', {
+        targetTypes: [...targetTypes],
+      })
+      .andWhere('Like.user_id IN (:...userIds)', {
+        userIds: [...userIds],
+      })
+      .groupBy('Like.target_type, Like.user_id');
+
+    const countMap = new Map<string, number>();
+
+    await qb
+      .getRawMany<{
+        targetType: LikeTargetType;
+        userId: string;
+        count: number;
+      }>()
+      .then((rows) => {
+        rows.forEach(({ targetType, userId, count }) => {
+          countMap.set(`${targetType}-${userId}`, count);
+        });
+      });
+
+    return keys.map(({ targetType, userId }) => {
+      return countMap.get(`${targetType}-${userId}`) || 0;
     });
   }
 
-  async countLikeByTarget(targetType: LikeTargetType, targetId: string) {
-    return this.dataSource.manager.count(Like, {
-      where: {
-        targetType,
-        targetId,
-      },
+  async _countLikeByTarget(
+    keys: readonly CountLikeByTargetLoaderKey[]
+  ): Promise<number[]> {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    const targetTypes = new Set(keys.map((key) => key.targetType));
+    const targetIds = new Set(keys.map((key) => key.targetId));
+
+    const qb = this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(Like, 'Like')
+      .select([
+        'Like.target_type as targetType',
+        'Like.target_id as targetId',
+        'count(*) as count',
+      ])
+      .andWhere('Like.target_type IN (:...targetTypes)', {
+        targetTypes: [...targetTypes],
+      })
+      .andWhere('Like.target_id IN (:...targetIds)', {
+        targetIds: [...targetIds],
+      })
+      .groupBy('Like.target_type, Like.target_id');
+
+    const countMap = new Map<string, number>();
+
+    await qb
+      .getRawMany<{
+        targetType: LikeTargetType;
+        targetId: string;
+        count: number;
+      }>()
+      .then((rows) => {
+        rows.forEach(({ targetType, targetId, count }) => {
+          countMap.set(`${targetType}-${targetId}`, count);
+        });
+      });
+
+    return keys.map(({ targetType, targetId }) => {
+      return countMap.get(`${targetType}-${targetId}`) || 0;
     });
   }
 
