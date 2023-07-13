@@ -4,6 +4,7 @@ import { UserResolver } from './user/user.resolver';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { LikeResolver } from './like/like.resolver';
 import { PostResolver } from './post/post.resolver';
+import { CategoryResolver } from './category/category.resolver';
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -32,7 +33,7 @@ dataSource
           instance: dataSource,
         },
       ],
-      resolvers: [UserResolver, LikeResolver, PostResolver],
+      resolvers: [UserResolver, LikeResolver, PostResolver, CategoryResolver],
       middlewares: [JwtMiddleware],
     });
 

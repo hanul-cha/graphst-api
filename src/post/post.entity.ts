@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { unixTimeTransformer } from '../utils/typeorm';
 
 @Entity()
 @Unique(['id'])
@@ -29,11 +30,24 @@ export class Post extends BaseEntity {
   })
   contents!: string;
 
+  @Column({ type: String, name: 'category_id', nullable: true })
+  categoryId!: string | null;
+
+  @Column({
+    type: 'timestamp',
+    name: 'active_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    transformer: unixTimeTransformer,
+    nullable: true,
+  })
+  activeAt!: number | null;
+
   @Column({
     type: 'timestamp',
     name: 'created_at',
     readonly: true,
     default: () => 'CURRENT_TIMESTAMP',
+    transformer: unixTimeTransformer,
   })
   createAt!: number;
 
@@ -42,6 +56,7 @@ export class Post extends BaseEntity {
     name: 'update_at',
     readonly: true,
     default: () => 'CURRENT_TIMESTAMP',
+    transformer: unixTimeTransformer,
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updateAt!: number;

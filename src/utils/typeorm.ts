@@ -13,3 +13,8 @@ export function validateAlias<T extends ObjectLiteral>(
     qb.expressionMap.mainAlias?.name === alias
   );
 }
+
+export const unixTimeTransformer = {
+  to: () => new Date().getTime(),
+  from: (value: number) => new Date(value),
+};

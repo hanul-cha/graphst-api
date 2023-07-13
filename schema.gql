@@ -4,11 +4,16 @@ type Post {
   contents: String!
   user: User!
   countLike: Int!
+  activeAt: Boolean!
+  category: String
 }
 
 enum AuthRole {
   """일반사용자"""
   user
+
+  """관리자"""
+  manager
 
   """개발자(전체권한)"""
   developer
@@ -81,6 +86,7 @@ type Query {
   users(pageOptions: PageOptionInput, userOptions: UsersOptionsInput): userPaginate
   getUser: User!
   getPost(id: ID!): Post
+  categories: [String!]!
 }
 
 type Mutation {
@@ -91,4 +97,7 @@ type Mutation {
   deleteUser(id: ID!): Boolean
   toggleLikeUser(targetId: String!, like: Boolean!): Boolean
   toggleLikePost(targetId: String!, like: Boolean!): Boolean
+  updateActiveAt(id: ID!, active: Boolean!): Boolean!
+  deleteCategory(id: ID!): Boolean!
+  addCategory(label: String!): Boolean!
 }

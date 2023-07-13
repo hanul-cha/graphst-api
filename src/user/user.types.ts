@@ -7,6 +7,8 @@ import {
 export enum AuthRole {
   USER = 'user',
 
+  MANAGER = 'manager',
+
   DEVELOPER = 'developer',
 }
 
@@ -16,6 +18,10 @@ export const GraphQLAuthRole = new GraphQLEnumType({
     user: {
       value: AuthRole.USER,
       description: '일반사용자',
+    },
+    manager: {
+      value: AuthRole.MANAGER,
+      description: '관리자',
     },
     developer: {
       value: AuthRole.DEVELOPER,
