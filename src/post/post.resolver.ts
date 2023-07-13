@@ -13,9 +13,16 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { CreatePostProps, PostService } from './post.service';
+import { PostService } from './post.service';
 import { CategoryService } from '../category/category.service';
 import { AuthContext } from '../types';
+import {
+  GraphqlPageOptionInput,
+  GraphqlPaginate,
+  PageOption,
+  Paginate,
+} from '../utils/pagination';
+import { CreatePostProps, GraphqlPostOptions, postOptions } from './post.types';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -24,6 +31,20 @@ export class PostResolver {
 
   @Inject(() => CategoryService)
   categoryService!: CategoryService;
+
+  @Query({
+    args: {
+      pageOptions: () => GraphqlPageOptionInput,
+      postOptions: () => GraphqlPostOptions,
+    },
+    returnType: () => GraphqlPaginate(Post, 'post'),
+  })
+  async posts(
+    _: null,
+    args: { pageOptions?: PageOption | null; postOptions?: postOptions }
+  ): Promise<Paginate<Post>> {
+    return this.postService.postPagination(args.pageOptions, args.postOptions);
+  }
 
   @Query({
     args: {

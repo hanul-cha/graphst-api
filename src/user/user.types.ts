@@ -75,6 +75,8 @@ export interface UsersOptions {
 
   /** @description 해당 아이디를 팔로우 하고 있는 유저들을 필터링 */
   followerId?: string;
+
+  likePostId?: string;
 }
 
 export const GraphqlUsersOptions = new GraphQLInputObjectType({
@@ -87,6 +89,9 @@ export const GraphqlUsersOptions = new GraphQLInputObjectType({
     followerId: {
       type: GraphQLString,
       description: '해당 아이디를 팔로우 하고 있는 유저들을 필터링',
+    },
+    likePostId: {
+      type: GraphQLString,
     },
   },
 });

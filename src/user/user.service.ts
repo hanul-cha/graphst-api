@@ -7,6 +7,7 @@ import { JwtService } from '../jwt/jwt.service';
 import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
 import DataLoader from 'dataloader';
+import { LikeTargetType } from '../like/like.types';
 
 @Injectable()
 export class UserService {
@@ -44,7 +45,17 @@ export class UserService {
 
     if (usersOptions?.followerId || usersOptions?.followingId) {
       qb.andWhere(
-        userLikesByUserScope(usersOptions.followerId, usersOptions.followingId)
+        userLikesByUserScope(
+          LikeTargetType.User,
+          usersOptions.followerId,
+          usersOptions.followingId
+        )
+      );
+    }
+
+    if (usersOptions?.likePostId) {
+      qb.andWhere(
+        userLikesByUserScope(LikeTargetType.Post, usersOptions?.likePostId)
       );
     }
 

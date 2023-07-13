@@ -68,6 +68,7 @@ input UsersOptionsInput {
 
   """해당 아이디를 팔로우 하고 있는 유저들을 필터링"""
   followerId: String
+  likePostId: String
 }
 
 type userPaginate {
@@ -82,9 +83,21 @@ type PageInfo {
   endPath: String!
 }
 
+input PostOptionsInput {
+  userId: String
+  likeUserId: String
+}
+
+type postPaginate {
+  totalCount: Int!
+  nodes: [Post!]!
+  pageInfo: PageInfo!
+}
+
 type Query {
   users(pageOptions: PageOptionInput, userOptions: UsersOptionsInput): userPaginate
   getUser: User!
+  posts(pageOptions: PageOptionInput, postOptions: PostOptionsInput): postPaginate
   getPost(id: ID!): Post
   categories: [String!]!
 }
