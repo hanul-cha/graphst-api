@@ -1,4 +1,4 @@
-import { Inject, Mutation, Query, Resolver } from 'graphst';
+import { Inject, Mutation, Query, Resolver, getObjectSchema } from 'graphst';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -20,7 +20,7 @@ export class CategoryResolver {
 
   @Query({
     returnType: () =>
-      GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      GraphQLNonNull(GraphQLList(GraphQLNonNull(getObjectSchema(Category)))),
   })
   async categories() {
     return this.categoryService.getAllCategories();

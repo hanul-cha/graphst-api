@@ -23,6 +23,7 @@ import {
   Paginate,
 } from '../utils/pagination';
 import { CreatePostProps, GraphqlPostOptions, postOptions } from './post.types';
+import { Category } from '../category/category.entity';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -41,9 +42,14 @@ export class PostResolver {
   })
   async posts(
     _: null,
-    args: { pageOptions?: PageOption | null; postOptions?: postOptions }
+    args: { pageOptions?: PageOption | null; postOptions?: postOptions },
+    context: AuthContext
   ): Promise<Paginate<Post>> {
-    return this.postService.postPagination(args.pageOptions, args.postOptions);
+    return this.postService.postPagination(
+      args.pageOptions,
+      args.postOptions,
+      context
+    );
   }
 
   @Query({
@@ -109,14 +115,12 @@ export class PostResolver {
 
   @FieldResolver({
     parent: () => Post,
-    returnType: () => GraphQLString,
+    returnType: () => Category,
   })
-  async category(post: Post): Promise<string | null> {
+  async category(post: Post): Promise<Category | null> {
     if (!post.categoryId) {
       return null;
     }
-    return this.categoryService.getCategoryLabelByIdLoader.load(
-      post.categoryId
-    );
+    return this.categoryService.getCategoryByIdLoader.load(post.categoryId);
   }
 }

@@ -8,10 +8,10 @@ export class CategoryService {
   @Inject(() => DataSource)
   dataSource!: DataSource;
 
-  getCategoryLabelByIdLoader: DataLoader<string, string | null>;
+  getCategoryByIdLoader: DataLoader<string, Category | null>;
 
   constructor() {
-    this.getCategoryLabelByIdLoader = new DataLoader(
+    this.getCategoryByIdLoader = new DataLoader(
       this._getCategoryLabel.bind(this),
       {
         cache: false,
@@ -19,22 +19,20 @@ export class CategoryService {
     );
   }
 
-  async _getCategoryLabel(ids: readonly string[]): Promise<(string | null)[]> {
+  async _getCategoryLabel(
+    ids: readonly string[]
+  ): Promise<(Category | null)[]> {
     const posts = await this.dataSource.manager.find(Category, {
       where: {
         id: In([...new Set(ids)]),
       },
     });
 
-    return ids.map(
-      (id) => posts.find((post) => `${post.id}` === id)?.label || null
-    );
+    return ids.map((id) => posts.find((post) => `${post.id}` === id) || null);
   }
 
   async getAllCategories() {
-    return (await this.dataSource.manager.find(Category)).map(
-      ({ label }) => label
-    );
+    return this.dataSource.manager.find(Category);
   }
 
   async addCategory(label: string) {

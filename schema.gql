@@ -1,3 +1,4 @@
+
 enum AuthRole {
   """일반사용자"""
   user
@@ -47,7 +48,7 @@ type Post {
   user: User!
   countLike: Int!
   activeAt: Boolean!
-  category: String
+  category: Category
 }
 
 input PageOptionInput {
@@ -94,12 +95,17 @@ type postPaginate {
   pageInfo: PageInfo!
 }
 
+type Category {
+  id: ID!
+  label: String!
+}
+
 type Query {
   users(pageOptions: PageOptionInput, userOptions: UsersOptionsInput): userPaginate
   getUser: User!
   posts(pageOptions: PageOptionInput, postOptions: PostOptionsInput): postPaginate
   getPost(id: ID!): Post
-  categories: [String!]!
+  categories: [Category!]!
 }
 
 type Mutation {

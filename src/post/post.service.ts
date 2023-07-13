@@ -6,6 +6,7 @@ import { CreatePostProps, postOptions } from './post.types';
 import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
 import { LikeTargetType } from '../like/like.types';
+import { AuthContext } from '../types';
 
 @Injectable()
 export class PostService {
@@ -32,11 +33,20 @@ export class PostService {
 
   async postPagination(
     pageOptions?: PageOption | null,
-    postOptions?: postOptions
+    postOptions?: postOptions,
+    context?: AuthContext
   ) {
     const qb = this.dataSource
       .createEntityManager()
       .createQueryBuilder(Post, 'Post');
+
+    qb.andWhere('Post.delete_at IS NULL');
+
+    if (postOptions?.userId && context?.user?.id === postOptions.userId) {
+      //
+    } else {
+      qb.andWhere('Post.active_at IS NOT NULL');
+    }
 
     if (postOptions?.userId) {
       qb.andWhere('Post.user_id = :userId', {

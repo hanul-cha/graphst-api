@@ -5,16 +5,19 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Injectable } from 'graphst';
+import { Field, ObjectType } from 'graphst';
 import { unixTimeTransformer } from '../utils/typeorm';
+import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 
 @Entity()
 @Unique(['label'])
-@Injectable()
+@ObjectType()
 export class Category extends BaseEntity {
+  @Field(() => GraphQLNonNull(GraphQLID))
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field(() => GraphQLNonNull(GraphQLString))
   @Column({ type: String })
   label!: string;
 
