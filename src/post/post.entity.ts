@@ -44,6 +44,15 @@ export class Post extends BaseEntity {
 
   @Column({
     type: 'timestamp',
+    name: 'delete_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    transformer: unixTimeTransformer,
+    nullable: true,
+  })
+  deleteAt!: number | null;
+
+  @Column({
+    type: 'timestamp',
     name: 'created_at',
     readonly: true,
     default: () => 'CURRENT_TIMESTAMP',

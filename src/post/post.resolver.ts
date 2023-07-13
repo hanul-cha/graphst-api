@@ -1,4 +1,11 @@
-import { FieldResolver, Inject, Mutation, Query, Resolver } from 'graphst';
+import {
+  FieldResolver,
+  Inject,
+  Mutation,
+  Query,
+  Resolver,
+  getObjectSchema,
+} from 'graphst';
 import { Post } from './post.entity';
 import {
   GraphQLBoolean,
@@ -6,8 +13,9 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { PostService } from './post.service';
+import { CreatePostProps, PostService } from './post.service';
 import { CategoryService } from '../category/category.service';
+import { AuthContext } from '../types';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -25,6 +33,37 @@ export class PostResolver {
   })
   async getPost(_: null, args: { id: number }) {
     return this.postService.getPostByUserIdLoader.load(args.id);
+  }
+
+  @Mutation({
+    args: {
+      title: () => GraphQLNonNull(GraphQLString),
+      content: () => GraphQLNonNull(GraphQLString),
+      categoryId: () => GraphQLString,
+      activeAt: () => GraphQLBoolean,
+    },
+    returnType: () => GraphQLNonNull(getObjectSchema(Post)),
+  })
+  async createPost(
+    _: null,
+    args: CreatePostProps,
+    context: AuthContext
+  ): Promise<Post> {
+    return this.postService.createPost({
+      ...args,
+      userId: `${context.auth.id}`,
+    });
+  }
+
+  @Mutation({
+    args: {
+      id: () => GraphQLNonNull(GraphQLID),
+    },
+    returnType: () => GraphQLNonNull(GraphQLBoolean),
+  })
+  async deletePost(_: null, args: { id: number }, context: AuthContext) {
+    await this.postService.deletePost(`${args.id}`, `${context.auth.id}`);
+    return true;
   }
 
   @Mutation({
