@@ -13,22 +13,23 @@ export class PostService {
   @Inject(() => DataSource)
   dataSource!: DataSource;
 
-  getPostByUserIdLoader: DataLoader<number, Post | null>;
+  getPostByIdLoader: DataLoader<string, Post | null>;
 
   constructor() {
-    this.getPostByUserIdLoader = new DataLoader(this._getPosts.bind(this), {
+    this.getPostByIdLoader = new DataLoader(this._getPosts.bind(this), {
       cache: false,
     });
   }
 
-  async _getPosts(ids: readonly number[]): Promise<(Post | null)[]> {
+  async _getPosts(ids: readonly string[]): Promise<(Post | null)[]> {
+    console.log([...new Set(ids)]);
     const posts = await this.dataSource.manager.find(Post, {
       where: {
         id: In([...new Set(ids)]),
       },
     });
 
-    return ids.map((id) => posts.find((post) => post.id === id) || null);
+    return ids.map((id) => posts.find((post) => `${post.id}` === id) || null);
   }
 
   async postPagination(
@@ -68,11 +69,61 @@ export class PostService {
   }
 
   async createPost(props: CreatePostProps): Promise<Post> {
+    const post = await this.dataSource.manager.findOne(Post, {
+      where: {
+        title: props.title,
+      },
+    });
+
+    if (post) {
+      throw new GraphstError('Duplicate title');
+    }
     return this.dataSource.manager.save(Post, {
       ...props,
       activeAt: props.activeAt ? new Date().getTime() : null,
       categoryId: props.categoryId || null,
     });
+  }
+
+  async updatePost({
+    postId,
+    title,
+    contents,
+    userId,
+    activeAt,
+    categoryId,
+  }: CreatePostProps & { postId: string }): Promise<Post> {
+    const dupPost = await this.dataSource.manager.findOne(Post, {
+      where: {
+        title,
+      },
+    });
+
+    if (dupPost && `${dupPost.id}` !== postId) {
+      throw new GraphstError('Duplicate title');
+    }
+
+    const post = await this.dataSource.manager.findOneOrFail(Post, {
+      where: {
+        id: +postId,
+      },
+    });
+
+    if (userId !== `${post.id}`) {
+      throw new GraphstError('Not authorized');
+    }
+
+    post.title = title;
+    post.contents = contents;
+    post.activeAt =
+      !!post.activeAt === !!activeAt
+        ? post.activeAt
+        : activeAt
+        ? new Date().getTime()
+        : null;
+    post.categoryId = categoryId ?? null;
+
+    return this.dataSource.manager.save(post);
   }
 
   async deletePost(id: string, userId: string) {

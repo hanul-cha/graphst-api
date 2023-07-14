@@ -58,14 +58,14 @@ export class PostResolver {
     },
     returnType: () => Post,
   })
-  async getPost(_: null, args: { id: number }) {
-    return this.postService.getPostByUserIdLoader.load(args.id);
+  async getPost(_: null, args: { id: string }) {
+    return this.postService.getPostByIdLoader.load(args.id);
   }
 
   @Mutation({
     args: {
       title: () => GraphQLNonNull(GraphQLString),
-      content: () => GraphQLNonNull(GraphQLString),
+      contents: () => GraphQLNonNull(GraphQLString),
       categoryId: () => GraphQLString,
       activeAt: () => GraphQLBoolean,
     },
@@ -77,6 +77,27 @@ export class PostResolver {
     context: AuthContext
   ): Promise<Post> {
     return this.postService.createPost({
+      ...args,
+      userId: `${context.auth.id}`,
+    });
+  }
+
+  @Mutation({
+    args: {
+      title: () => GraphQLNonNull(GraphQLString),
+      contents: () => GraphQLNonNull(GraphQLString),
+      categoryId: () => GraphQLString,
+      activeAt: () => GraphQLBoolean,
+      postId: () => GraphQLNonNull(GraphQLID),
+    },
+    returnType: () => GraphQLNonNull(getObjectSchema(Post)),
+  })
+  async updatePost(
+    _: null,
+    args: CreatePostProps & { postId: string },
+    context: AuthContext
+  ): Promise<Post> {
+    return this.postService.updatePost({
       ...args,
       userId: `${context.auth.id}`,
     });

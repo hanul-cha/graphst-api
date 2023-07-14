@@ -3,7 +3,7 @@ import { GraphQLInputObjectType, GraphQLString } from 'graphql';
 export interface CreatePostProps {
   userId: string;
   title: string;
-  content: string;
+  contents: string;
   categoryId?: string;
   activeAt?: boolean;
 }

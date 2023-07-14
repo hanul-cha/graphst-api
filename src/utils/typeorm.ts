@@ -15,6 +15,33 @@ export function validateAlias<T extends ObjectLiteral>(
 }
 
 export const unixTimeTransformer = {
-  to: () => new Date().getTime(),
-  from: (value: number) => new Date(value),
+  to: (value: number | null) => {
+    if (!value) {
+      return null;
+    }
+    return new Date(value);
+  },
+  from: (value: string | null) => {
+    if (!value) {
+      return null;
+    }
+    const date = new Date(value);
+    return Math.floor(date.getTime() / 1000);
+  },
+};
+
+export const unixTimeDefaultTransformer = {
+  to: (value: number | null) => {
+    if (!value) {
+      return new Date();
+    }
+    return new Date(value);
+  },
+  from: (value: string | null) => {
+    if (!value) {
+      return null;
+    }
+    const date = new Date(value);
+    return Math.floor(date.getTime() / 1000);
+  },
 };

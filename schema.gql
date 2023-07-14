@@ -116,7 +116,8 @@ type Mutation {
   deleteUser(id: ID!): Boolean
   toggleLikeUser(targetId: String!, like: Boolean!): Boolean
   toggleLikePost(targetId: String!, like: Boolean!): Boolean
-  createPost(title: String!, content: String!, categoryId: String, activeAt: Boolean): Post!
+  createPost(title: String!, contents: String!, categoryId: String, activeAt: Boolean): Post!
+  updatePost(title: String!, contents: String!, categoryId: String, activeAt: Boolean, postId: ID!): Post!
   deletePost(id: ID!): Boolean!
   updateActiveAt(id: ID!, active: Boolean!): Boolean!
   deleteCategory(id: ID!): Boolean!
