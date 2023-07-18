@@ -4,6 +4,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -14,6 +15,7 @@ import {
 
 @Entity()
 @Unique(['id'])
+@Index(['title'])
 @ObjectType()
 export class Post extends BaseEntity {
   @Field(() => GraphQLNonNull(GraphQLID))

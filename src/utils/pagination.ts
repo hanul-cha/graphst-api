@@ -36,7 +36,7 @@ export const GraphqlPageOptionOrderInput = new GraphQLInputObjectType({
   name: 'orderInput',
   fields: {
     column: { type: GraphQLNonNull(GraphQLString) },
-    asc: { type: GraphQLNonNull(GraphQLString) },
+    asc: { type: GraphQLNonNull(GraphQLBoolean) },
   },
 });
 

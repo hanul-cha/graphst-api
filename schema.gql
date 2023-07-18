@@ -60,7 +60,7 @@ input PageOptionInput {
 
 input orderInput {
   column: String!
-  asc: String!
+  asc: Boolean!
 }
 
 input UsersOptionsInput {
@@ -87,6 +87,8 @@ type PageInfo {
 input PostOptionsInput {
   userId: String
   likeUserId: String
+  query: String
+  categoryId: String
 }
 
 type postPaginate {

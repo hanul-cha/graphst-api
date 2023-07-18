@@ -22,7 +22,6 @@ export class PostService {
   }
 
   async _getPosts(ids: readonly string[]): Promise<(Post | null)[]> {
-    console.log([...new Set(ids)]);
     const posts = await this.dataSource.manager.find(Post, {
       where: {
         id: In([...new Set(ids)]),
@@ -42,6 +41,18 @@ export class PostService {
       .createQueryBuilder(Post, 'Post');
 
     qb.andWhere('Post.delete_at IS NULL');
+
+    if (postOptions?.query) {
+      qb.andWhere('Post.title LIKE :query', {
+        query: `%${postOptions.query}%`,
+      });
+    }
+
+    if (postOptions?.categoryId) {
+      qb.andWhere('Post.category_id = :categoryId', {
+        categoryId: postOptions.categoryId,
+      });
+    }
 
     if (postOptions?.userId && context?.user?.id === postOptions.userId) {
       //

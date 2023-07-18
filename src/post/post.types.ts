@@ -11,6 +11,8 @@ export interface CreatePostProps {
 export interface postOptions {
   userId?: string;
   likeUserId?: string;
+  query?: string;
+  categoryId?: string;
 }
 
 export const GraphqlPostOptions = new GraphQLInputObjectType({
@@ -20,6 +22,12 @@ export const GraphqlPostOptions = new GraphQLInputObjectType({
       type: GraphQLString,
     },
     likeUserId: {
+      type: GraphQLString,
+    },
+    query: {
+      type: GraphQLString,
+    },
+    categoryId: {
       type: GraphQLString,
     },
   },
