@@ -15,6 +15,10 @@ interface CountLikeByTargetLoaderKey {
   targetId: string;
 }
 
+interface IsLikeByUserIdLoaderKey extends CountLikeByTargetLoaderKey {
+  userId: string;
+}
+
 @Injectable()
 export class LikeService {
   @Inject(() => DataSource)
@@ -22,6 +26,7 @@ export class LikeService {
 
   countLikeByUserLoader: DataLoader<CountLikeByUserLoaderKey, number>;
   countLikeByTargetLoader: DataLoader<CountLikeByTargetLoaderKey, number>;
+  isLikeByUserIdLoader: DataLoader<IsLikeByUserIdLoaderKey, boolean>;
 
   constructor() {
     this.countLikeByUserLoader = new DataLoader(
@@ -32,6 +37,63 @@ export class LikeService {
       this._countLikeByTarget.bind(this),
       { cache: false }
     );
+    this.isLikeByUserIdLoader = new DataLoader(
+      this._isLikeByUserId.bind(this),
+      { cache: false }
+    );
+  }
+
+  async _isLikeByUserId(
+    keys: readonly IsLikeByUserIdLoaderKey[]
+  ): Promise<boolean[]> {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    const targetTypes = new Set(keys.map((key) => key.targetType));
+    const targetIds = new Set(keys.map((key) => key.targetId));
+    const userIds = new Set(keys.map((key) => key.userId));
+
+    const qb = this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(Like, 'Like')
+      .select([
+        'Like.target_type as targetType',
+        'Like.target_id as targetId',
+        'Like.user_id as userId',
+        'count(*) as count',
+      ])
+      .andWhere('Like.target_type IN (:...targetTypes)', {
+        targetTypes: [...targetTypes],
+      })
+      .andWhere('Like.target_id IN (:...targetIds)', {
+        targetIds: [...targetIds],
+      })
+      .andWhere('Like.user_id IN (:...userIds)', {
+        userIds: [...userIds],
+      })
+      .groupBy('Like.target_type, Like.target_id, Like.user_id');
+
+    const countMap = new Map<string, number>();
+
+    await qb
+      .getRawMany<{
+        targetType: LikeTargetType;
+        targetId: string;
+        userId: string;
+        count: number;
+      }>()
+      .then((rows) => {
+        rows.forEach(({ targetType, targetId, count, userId }) => {
+          if (count > 0) {
+            countMap.set(`${targetType}-${targetId}-${userId}`, count);
+          }
+        });
+      });
+
+    return keys.map(({ targetType, targetId, userId }) => {
+      return !!countMap.get(`${targetType}-${targetId}-${userId}`);
+    });
   }
 
   async _countLikeByUser(

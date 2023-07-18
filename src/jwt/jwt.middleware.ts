@@ -15,8 +15,15 @@ export class JwtMiddleware implements MiddlewareInterface {
       'signUp',
       'validateQuestion',
       'changePassword',
+      'categories',
+      'posts',
+      'getPost',
     ];
-    if (ignorePaths.some((path) => path === props.info.fieldName)) {
+    const ignoreParents = ['Post'];
+    if (
+      ignoreParents.some((path) => path === `${props.info.parentType}`) ||
+      ignorePaths.some((path) => path === props.info.fieldName)
+    ) {
       return next();
     }
 

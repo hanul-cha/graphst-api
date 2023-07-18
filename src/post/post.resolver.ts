@@ -25,6 +25,7 @@ import {
 import { CreatePostProps, GraphqlPostOptions, postOptions } from './post.types';
 import { Category } from '../category/category.entity';
 
+/** @warring jwt middleware의 보호를 받지 않는 타입 */
 @Resolver(() => Post)
 export class PostResolver {
   @Inject(() => PostService)
@@ -58,8 +59,15 @@ export class PostResolver {
     },
     returnType: () => Post,
   })
-  async getPost(_: null, args: { id: string }) {
-    return this.postService.getPostByIdLoader.load(args.id);
+  async getPost(_: null, args: { id: string }, context: AuthContext) {
+    const post = await this.postService.getPostByIdLoader.load(args.id);
+
+    if (
+      post?.deleteAt ||
+      (!post?.activeAt && post?.userId !== `${context.auth?.id}`)
+    ) {
+      return null;
+    }
   }
 
   @Mutation({
@@ -78,7 +86,7 @@ export class PostResolver {
   ): Promise<Post> {
     return this.postService.createPost({
       ...args,
-      userId: `${context.auth.id}`,
+      userId: `${context.auth!.id}`,
     });
   }
 
@@ -99,7 +107,7 @@ export class PostResolver {
   ): Promise<Post> {
     return this.postService.updatePost({
       ...args,
-      userId: `${context.auth.id}`,
+      userId: `${context.auth!.id}`,
     });
   }
 
@@ -110,7 +118,7 @@ export class PostResolver {
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
   async deletePost(_: null, args: { id: number }, context: AuthContext) {
-    await this.postService.deletePost(`${args.id}`, `${context.auth.id}`);
+    await this.postService.deletePost(`${args.id}`, `${context.auth!.id}`);
     return true;
   }
 

@@ -3,7 +3,7 @@ import { AuthRole } from './user/user.types';
 
 export interface AuthContext {
   req: IncomingMessage;
-  auth: { id: number; roles: AuthRole[] | null; name: string };
+  auth?: { id: number; roles: AuthRole[] | null; name: string } | null;
   [key: string]: any;
 }
 

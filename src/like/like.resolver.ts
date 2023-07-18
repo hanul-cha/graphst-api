@@ -54,13 +54,13 @@ export class LikeResolver {
       await this.likeService.createLikeLink(
         targetType,
         args.targetId,
-        `${ctx.auth.id}`
+        `${ctx.auth!.id}`
       );
     } else {
       await this.likeService.deleteLikeLink(
         targetType,
         args.targetId,
-        `${ctx.auth.id}`
+        `${ctx.auth!.id}`
       );
     }
 
@@ -97,6 +97,26 @@ export class LikeResolver {
   async countLikeByPost(parent: Post): Promise<number> {
     return this.likeService.countLikeByTargetLoader.load({
       targetType: LikeTargetType.Post,
+      targetId: `${parent.id}`,
+    });
+  }
+
+  @FieldResolver({
+    parent: () => Post,
+    returnType: () => GraphQLNonNull(GraphQLBoolean),
+    name: 'isLike',
+  })
+  async isLikePostByUser(
+    parent: Post,
+    _: null,
+    context: AuthContext
+  ): Promise<boolean> {
+    if (!context?.auth) {
+      return false;
+    }
+    return this.likeService.isLikeByUserIdLoader.load({
+      targetType: LikeTargetType.Post,
+      userId: `${context.auth.id}`,
       targetId: `${parent.id}`,
     });
   }

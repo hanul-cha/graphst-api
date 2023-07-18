@@ -9,6 +9,9 @@ export function createRolesMiddleware(roles: AuthRole[]) {
       props: GraphstApiProps,
       next: (props?: GraphstApiProps | undefined) => void
     ): void | Promise<void> {
+      if (!props.context.auth) {
+        throw new Error('lack of authority');
+      }
       const userRoles = props.context.auth.roles;
       if (
         userRoles &&
@@ -18,7 +21,7 @@ export function createRolesMiddleware(roles: AuthRole[]) {
         return next();
       }
 
-      throw new Error('no access');
+      throw new Error('lack of authority');
     }
   }
 

@@ -47,6 +47,7 @@ type Post {
   contents: String!
   user: User!
   countLike: Int!
+  isLike: Boolean!
   activeAt: Boolean!
   category: Category
 }

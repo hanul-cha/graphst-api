@@ -55,7 +55,7 @@ export class UserResolver {
   })
   async getUser(_: null, __: null, context: AuthContext) {
     const user = await this.userService.getUserByUserIdLoader.load(
-      context.auth.id
+      context.auth!.id
     );
 
     if (!user) {
