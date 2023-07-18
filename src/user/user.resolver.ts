@@ -1,5 +1,6 @@
 import {
   FieldResolver,
+  GraphstError,
   Inject,
   Mutation,
   Query,
@@ -123,7 +124,14 @@ export class UserResolver {
       answerForSearch: string;
     }
   ): Promise<User> {
-    return this.userService.createUser(args);
+    try {
+      return await this.userService.createUser(args);
+    } catch (e: any) {
+      if (e.message === '이미 사용중인 아이디 입니다.') {
+        throw new GraphstError('이미 사용중인 아이디 입니다.', 'DUP_ID');
+      }
+      throw new Error(e);
+    }
   }
 
   @Mutation({

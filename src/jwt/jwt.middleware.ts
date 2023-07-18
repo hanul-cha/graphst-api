@@ -10,39 +10,38 @@ export class JwtMiddleware implements MiddlewareInterface {
     props: GraphstProps,
     next: (props?: GraphstProps | undefined) => void
   ): void | Promise<void> {
-    const ignorePaths = [
-      'signIn',
-      'signUp',
-      'validateQuestion',
-      'changePassword',
-      'categories',
-      'posts',
-      'getPost',
-    ];
-    const ignoreParents = ['Post'];
-    if (
-      ignoreParents.some((path) => path === `${props.info.parentType}`) ||
-      ignorePaths.some((path) => path === props.info.fieldName)
-    ) {
-      return next();
-    }
-
-    const authorization = props.context.req.headers.authorization;
-
-    if (!authorization) {
-      throw new Error('token is not exist');
-    }
+    const authorization = props.context.req.headers.authorization ?? '';
     const token = authorization.replace('Bearer ', '');
 
-    const decodedToken = this.jwtService.verify(token);
-    const propWithAuth = {
-      ...props,
-      context: {
-        ...props.context,
-        auth: decodedToken,
-      },
-    };
+    try {
+      const decodedToken = this.jwtService.verify(token);
+      const propWithAuth = {
+        ...props,
+        context: {
+          ...props.context,
+          auth: decodedToken,
+        },
+      };
 
-    return next(propWithAuth);
+      return next(propWithAuth);
+    } catch (error) {
+      const ignorePaths = [
+        'signIn',
+        'signUp',
+        'validateQuestion',
+        'changePassword',
+        'categories',
+        'posts',
+        'getPost',
+      ];
+      const ignoreParents = ['Post'];
+      if (
+        ignoreParents.some((path) => path === `${props.info.parentType}`) ||
+        ignorePaths.some((path) => path === props.info.fieldName)
+      ) {
+        return next();
+      }
+      throw new Error('token is not valid');
+    }
   }
 }

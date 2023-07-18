@@ -64,7 +64,7 @@ export class LikeResolver {
       );
     }
 
-    return args.like;
+    return true;
   }
 
   @FieldResolver({
