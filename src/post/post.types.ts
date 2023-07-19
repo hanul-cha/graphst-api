@@ -1,4 +1,4 @@
-import { GraphQLInputObjectType, GraphQLString } from 'graphql';
+import { GraphQLEnumType, GraphQLString } from 'graphql';
 
 export interface CreatePostProps {
   userId: string;
@@ -15,20 +15,26 @@ export interface postOptions {
   categoryId?: string;
 }
 
-export const GraphqlPostOptions = new GraphQLInputObjectType({
-  name: 'PostOptionsInput',
-  fields: {
-    userId: {
-      type: GraphQLString,
+export const graphqlPostOptions = {
+  userId: () => GraphQLString,
+  likeUserId: () => GraphQLString,
+  query: () => GraphQLString,
+  categoryId: () => GraphQLString,
+};
+
+export enum PostOrder {
+  TITLE = 'title',
+  FOLLOWER = 'follower',
+}
+
+export const GraphQLPostOrder = new GraphQLEnumType({
+  name: 'PostOrder',
+  values: {
+    title: {
+      value: PostOrder.TITLE,
     },
-    likeUserId: {
-      type: GraphQLString,
-    },
-    query: {
-      type: GraphQLString,
-    },
-    categoryId: {
-      type: GraphQLString,
+    follower: {
+      value: PostOrder.FOLLOWER,
     },
   },
 });

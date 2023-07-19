@@ -1,8 +1,8 @@
 import { GraphstError, Inject, Injectable } from 'graphst';
-import { DataSource, In } from 'typeorm';
+import { Brackets, DataSource, In } from 'typeorm';
 import { Post } from './post.entity';
 import DataLoader from 'dataloader';
-import { CreatePostProps, postOptions } from './post.types';
+import { CreatePostProps, PostOrder, postOptions } from './post.types';
 import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
 import { LikeTargetType } from '../like/like.types';
@@ -32,8 +32,7 @@ export class PostService {
   }
 
   async postPagination(
-    pageOptions?: PageOption | null,
-    postOptions?: postOptions,
+    args?: PageOption<PostOrder> & postOptions,
     context?: AuthContext
   ) {
     const qb = this.dataSource
@@ -42,41 +41,64 @@ export class PostService {
 
     qb.andWhere('Post.delete_at IS NULL');
 
-    if (postOptions?.query) {
+    if (args?.query) {
       qb.andWhere('Post.title LIKE :query', {
-        query: `%${postOptions.query}%`,
+        query: `%${args.query}%`,
       });
     }
 
-    if (postOptions?.categoryId) {
+    if (args?.categoryId) {
       qb.andWhere('Post.category_id = :categoryId', {
-        categoryId: postOptions.categoryId,
+        categoryId: args.categoryId,
       });
     }
 
-    if (postOptions?.userId && context?.user?.id === postOptions.userId) {
-      //
+    if (context?.auth?.id) {
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.orWhere('Post.active_at IS NOT NULL');
+          qb.orWhere('Post.active_at IS NULL AND Post.user_id = :authId', {
+            authId: context?.auth?.id,
+          });
+        })
+      );
     } else {
       qb.andWhere('Post.active_at IS NOT NULL');
     }
 
-    if (postOptions?.userId) {
+    if (args?.userId) {
       qb.andWhere('Post.user_id = :userId', {
-        userId: postOptions.userId,
+        userId: args.userId,
       });
     }
 
-    if (postOptions?.likeUserId) {
+    if (args?.likeUserId) {
       qb.andWhere(
-        userLikesByUserScope(
-          LikeTargetType.Post,
-          undefined,
-          postOptions?.likeUserId
-        )
+        userLikesByUserScope(LikeTargetType.Post, undefined, args?.likeUserId)
       );
     }
 
-    return paginate(qb, pageOptions);
+    let column = '';
+
+    if (args?.order) {
+      if (args.order === PostOrder.FOLLOWER) {
+        column = 'likeCount';
+        // TODO: use cte
+        qb.select('() as likeCount');
+      } else if (args.order === PostOrder.TITLE) {
+        column = 'Post.title';
+      }
+    }
+
+    return paginate(
+      qb,
+      args?.order
+        ? {
+            ...args,
+            order: column,
+          }
+        : args
+    );
   }
 
   async createPost(props: CreatePostProps): Promise<Post> {
@@ -121,7 +143,7 @@ export class PostService {
     });
 
     if (userId !== `${post.id}`) {
-      throw new GraphstError('Not authorized');
+      throw new GraphstError('Only the author can edit');
     }
 
     post.title = title;
@@ -153,12 +175,16 @@ export class PostService {
     await this.dataSource.manager.save(post);
   }
 
-  async updateActiveAt(id: number, active: boolean) {
+  async updateActiveAt(id: number, active: boolean, userId: string) {
     const post = await this.dataSource.manager.findOneOrFail(Post, {
       where: {
         id,
       },
     });
+
+    if (post.userId !== userId) {
+      throw new GraphstError('Only the author can edit');
+    }
 
     if (!!post.activeAt === active) {
       throw new GraphstError('Already actioned');

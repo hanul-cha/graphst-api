@@ -19,14 +19,14 @@ import {
   AuthQuestion,
   AuthRole,
   GraphQLAuthQuestion,
-  GraphqlUsersOptions,
+  graphqlUsersOptions,
   UsersOptions,
 } from './user.types';
 import { createRolesMiddleware } from './user.middleware';
 import { AuthContext } from '../types';
 import { Post } from '../post/post.entity';
 import {
-  GraphqlPageOptionInput,
+  graphqlPageInfo,
   GraphqlPaginate,
   PageOption,
   Paginate,
@@ -39,16 +39,16 @@ export class UserResolver {
 
   @Query({
     args: {
-      pageOptions: () => GraphqlPageOptionInput,
-      userOptions: () => GraphqlUsersOptions,
+      ...graphqlPageInfo(),
+      ...graphqlUsersOptions,
     },
     returnType: () => GraphqlPaginate(User, 'user'),
   })
   async users(
     _: null,
-    args: { pageOptions?: PageOption | null; userOptions?: UsersOptions }
+    args: PageOption & UsersOptions
   ): Promise<Paginate<User>> {
-    return this.userService.userPagination(args.pageOptions, args.userOptions);
+    return this.userService.userPagination(args);
   }
 
   @Query({

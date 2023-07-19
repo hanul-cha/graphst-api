@@ -1,8 +1,4 @@
-import {
-  GraphQLEnumType,
-  GraphQLInputObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLEnumType, GraphQLString } from 'graphql';
 
 export enum AuthRole {
   USER = 'user',
@@ -79,19 +75,8 @@ export interface UsersOptions {
   likePostId?: string;
 }
 
-export const GraphqlUsersOptions = new GraphQLInputObjectType({
-  name: 'UsersOptionsInput',
-  fields: {
-    followingId: {
-      type: GraphQLString,
-      description: '해당 아이디가 팔로우 하고 있는 유저들을 필터링',
-    },
-    followerId: {
-      type: GraphQLString,
-      description: '해당 아이디를 팔로우 하고 있는 유저들을 필터링',
-    },
-    likePostId: {
-      type: GraphQLString,
-    },
-  },
-});
+export const graphqlUsersOptions = {
+  followingId: () => GraphQLString,
+  followerId: () => GraphQLString,
+  likePostId: () => GraphQLString,
+};

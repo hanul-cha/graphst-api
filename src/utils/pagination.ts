@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
@@ -25,11 +26,12 @@ export const GraphqlPageInfo = new GraphQLObjectType({
   },
 });
 
-export interface PageOption {
+export interface PageOption<T = string> {
   perPage?: number;
   page?: number;
   after?: string | null;
-  order?: { column: string; asc: boolean };
+  order?: T;
+  asc?: boolean;
 }
 
 export const GraphqlPageOptionOrderInput = new GraphQLInputObjectType({
@@ -40,15 +42,15 @@ export const GraphqlPageOptionOrderInput = new GraphQLInputObjectType({
   },
 });
 
-export const GraphqlPageOptionInput = new GraphQLInputObjectType({
-  name: 'PageOptionInput',
-  fields: {
-    perPage: { type: GraphQLInt },
-    page: { type: GraphQLInt },
-    after: { type: GraphQLString },
-    order: { type: GraphqlPageOptionOrderInput },
-  },
-});
+export function graphqlPageInfo(order?: GraphQLEnumType) {
+  return {
+    perPage: () => GraphQLInt,
+    page: () => GraphQLInt,
+    after: () => GraphQLString,
+    order: () => order ?? GraphQLString,
+    asc: () => GraphQLBoolean,
+  };
+}
 
 export interface Paginate<TEntity extends ObjectLiteral> {
   totalCount: number;
@@ -85,6 +87,7 @@ export async function paginate<TEntity extends ObjectLiteral>(
   const nodes = await nodeQuery
     .take(perPage)
     .skip(perPage * (page - 1))
+    .orderBy(option?.order ?? 'id', option?.asc ? 'ASC' : 'DESC')
     .getMany();
 
   const hasNextPage =

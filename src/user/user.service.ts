@@ -35,31 +35,26 @@ export class UserService {
     return ids.map((id) => users.find((user) => user.id === id) || null);
   }
 
-  async userPagination(
-    pageOptions?: PageOption | null,
-    usersOptions?: UsersOptions
-  ) {
+  async userPagination(args: PageOption & UsersOptions) {
     const qb = this.dataSource
       .createEntityManager()
       .createQueryBuilder(User, 'User');
 
-    if (usersOptions?.followerId || usersOptions?.followingId) {
+    if (args?.followerId || args?.followingId) {
       qb.andWhere(
         userLikesByUserScope(
           LikeTargetType.User,
-          usersOptions.followerId,
-          usersOptions.followingId
+          args.followerId,
+          args.followingId
         )
       );
     }
 
-    if (usersOptions?.likePostId) {
-      qb.andWhere(
-        userLikesByUserScope(LikeTargetType.Post, usersOptions?.likePostId)
-      );
+    if (args?.likePostId) {
+      qb.andWhere(userLikesByUserScope(LikeTargetType.Post, args?.likePostId));
     }
 
-    return paginate(qb, pageOptions);
+    return paginate(qb, args);
   }
 
   async validateQuestion(

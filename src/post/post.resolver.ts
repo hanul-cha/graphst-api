@@ -17,12 +17,18 @@ import { PostService } from './post.service';
 import { CategoryService } from '../category/category.service';
 import { AuthContext } from '../types';
 import {
-  GraphqlPageOptionInput,
   GraphqlPaginate,
   PageOption,
   Paginate,
+  graphqlPageInfo,
 } from '../utils/pagination';
-import { CreatePostProps, GraphqlPostOptions, postOptions } from './post.types';
+import {
+  CreatePostProps,
+  GraphQLPostOrder,
+  PostOrder,
+  graphqlPostOptions,
+  postOptions,
+} from './post.types';
 import { Category } from '../category/category.entity';
 
 /** @warring jwt middleware의 보호를 받지 않는 타입 */
@@ -36,21 +42,17 @@ export class PostResolver {
 
   @Query({
     args: {
-      pageOptions: () => GraphqlPageOptionInput,
-      postOptions: () => GraphqlPostOptions,
+      ...graphqlPageInfo(GraphQLPostOrder),
+      ...graphqlPostOptions,
     },
     returnType: () => GraphqlPaginate(Post, 'post'),
   })
   async posts(
     _: null,
-    args: { pageOptions?: PageOption | null; postOptions?: postOptions },
+    args: PageOption<PostOrder> & postOptions,
     context: AuthContext
   ): Promise<Paginate<Post>> {
-    return this.postService.postPagination(
-      args.pageOptions,
-      args.postOptions,
-      context
-    );
+    return this.postService.postPagination(args, context);
   }
 
   @Query({
@@ -129,8 +131,16 @@ export class PostResolver {
     },
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
-  async updateActiveAt(_: null, args: { id: number; active: boolean }) {
-    await this.postService.updateActiveAt(args.id, args.active);
+  async updateActiveAt(
+    _: null,
+    args: { id: number; active: boolean },
+    context: AuthContext
+  ) {
+    await this.postService.updateActiveAt(
+      args.id,
+      args.active,
+      `${context.auth!.id}`
+    );
     return true;
   }
 

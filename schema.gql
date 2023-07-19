@@ -52,27 +52,6 @@ type Post {
   category: Category
 }
 
-input PageOptionInput {
-  perPage: Int
-  page: Int
-  after: String
-  order: orderInput
-}
-
-input orderInput {
-  column: String!
-  asc: Boolean!
-}
-
-input UsersOptionsInput {
-  """해당 아이디가 팔로우 하고 있는 유저들을 필터링"""
-  followingId: String
-
-  """해당 아이디를 팔로우 하고 있는 유저들을 필터링"""
-  followerId: String
-  likePostId: String
-}
-
 type userPaginate {
   totalCount: Int!
   nodes: [User!]!
@@ -85,11 +64,9 @@ type PageInfo {
   endPath: String!
 }
 
-input PostOptionsInput {
-  userId: String
-  likeUserId: String
-  query: String
-  categoryId: String
+enum PostOrder {
+  title
+  follower
 }
 
 type postPaginate {
@@ -104,9 +81,9 @@ type Category {
 }
 
 type Query {
-  users(pageOptions: PageOptionInput, userOptions: UsersOptionsInput): userPaginate
+  users(perPage: Int, page: Int, after: String, order: String, asc: Boolean, followingId: String, followerId: String, likePostId: String): userPaginate
   getUser: User!
-  posts(pageOptions: PageOptionInput, postOptions: PostOptionsInput): postPaginate
+  posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
   getPost(id: ID!): Post
   categories: [Category!]!
 }
