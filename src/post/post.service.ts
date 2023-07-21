@@ -82,9 +82,7 @@ export class PostService {
 
     if (args?.order) {
       if (args.order === PostOrder.FOLLOWER) {
-        column = 'likeCount';
-        // TODO: use cte
-        qb.select('() as likeCount');
+        column = 'Post._count_like';
       } else if (args.order === PostOrder.TITLE) {
         column = 'Post.title';
       }

@@ -1,9 +1,10 @@
 import { Inject, Injectable } from 'graphst';
 import { LikeTargetType } from './like.types';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Like } from './like.entity';
 import DataLoader from 'dataloader';
+import { Post } from '../post/post.entity';
 
 interface CountLikeByUserLoaderKey {
   targetType: LikeTargetType;
@@ -217,14 +218,17 @@ export class LikeService {
     if (like) {
       throw new Error('Already liked');
     }
-
-    return this.dataSource.manager.save(
-      this.dataSource.manager.create(Like, {
-        targetType,
-        targetId,
-        userId,
-      })
-    );
+    return this.dataSource.manager.transaction(async (manager) => {
+      const likeRepository = manager.getRepository(Like);
+      await likeRepository.save(
+        likeRepository.create({
+          targetType,
+          targetId,
+          userId,
+        })
+      );
+      await this.updateCount(targetType, targetId, manager, 1);
+    });
   }
 
   async deleteLikeLink(
@@ -237,8 +241,43 @@ export class LikeService {
     if (!like) {
       throw new Error('Not liked');
     }
-    await this.dataSource.manager.remove(like);
+    return this.dataSource.manager.transaction(async (manager) => {
+      const likeRepository = manager.getRepository(Like);
+      await likeRepository.remove(like);
+      await this.updateCount(targetType, targetId, manager, -1);
+    });
+  }
 
-    return true;
+  async updateCount(
+    targetType: LikeTargetType,
+    targetId: string,
+    manager: EntityManager,
+    count: number
+  ) {
+    let entity = null;
+    if (targetType === LikeTargetType.User) {
+      entity = User;
+    } else if (targetType === LikeTargetType.Post) {
+      entity = Post;
+    }
+
+    if (!entity) {
+      return;
+    }
+
+    const repository = manager.getRepository(entity);
+    const data = await repository.findOne({
+      where: {
+        id: +targetId,
+      },
+    });
+
+    if (!data) {
+      return;
+    }
+
+    data._countLike += count;
+
+    await repository.save(data);
   }
 }

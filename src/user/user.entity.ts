@@ -55,6 +55,14 @@ export class User extends BaseEntity {
   answerForSearch!: string;
 
   @Column({
+    type: Number,
+    name: '_count_like',
+    default: 0,
+  })
+  /** @description order를 위한 역정규화 칼럼 */
+  _countLike!: number;
+
+  @Column({
     type: 'timestamp',
     name: 'created_at',
     readonly: true,
