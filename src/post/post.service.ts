@@ -48,9 +48,13 @@ export class PostService {
     }
 
     if (args?.categoryId) {
-      qb.andWhere('Post.category_id = :categoryId', {
-        categoryId: args.categoryId,
-      });
+      if (args?.categoryId === '_NULL_') {
+        qb.andWhere('Post.category_id IS NULL');
+      } else {
+        qb.andWhere('Post.category_id = :categoryId', {
+          categoryId: args.categoryId,
+        });
+      }
     }
 
     if (context?.auth?.id) {

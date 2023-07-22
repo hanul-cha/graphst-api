@@ -265,7 +265,7 @@ export class LikeService {
       return;
     }
 
-    const repository = manager.getRepository(entity);
+    const repository = manager.getRepository<User | Post>(entity);
     const data = await repository.findOne({
       where: {
         id: +targetId,

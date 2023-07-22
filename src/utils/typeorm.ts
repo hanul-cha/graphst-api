@@ -19,7 +19,7 @@ export const unixTimeTransformer = {
     if (!value) {
       return null;
     }
-    return new Date(value);
+    return new Date(new Date(value * 1000));
   },
   from: (value: string | null) => {
     if (!value) {
