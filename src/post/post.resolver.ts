@@ -70,6 +70,7 @@ export class PostResolver {
     ) {
       return null;
     }
+    return post;
   }
 
   @Mutation({
