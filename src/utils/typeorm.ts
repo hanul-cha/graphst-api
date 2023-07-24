@@ -1,3 +1,4 @@
+import { getUnixTime } from 'date-fns';
 import {
   ObjectLiteral,
   SelectQueryBuilder,
@@ -19,14 +20,13 @@ export const unixTimeTransformer = {
     if (!value) {
       return null;
     }
-    return new Date(new Date(value * 1000));
+    return new Date(value * 1000);
   },
-  from: (value: string | null) => {
+  from: (value: Date | null) => {
     if (!value) {
       return null;
     }
-    const date = new Date(value);
-    return Math.floor(date.getTime() / 1000);
+    return getUnixTime(value);
   },
 };
 
@@ -37,11 +37,10 @@ export const unixTimeDefaultTransformer = {
     }
     return new Date(value);
   },
-  from: (value: string | null) => {
+  from: (value: Date | null) => {
     if (!value) {
       return null;
     }
-    const date = new Date(value);
-    return Math.floor(date.getTime() / 1000);
+    return getUnixTime(value);
   },
 };

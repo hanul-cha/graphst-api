@@ -7,6 +7,7 @@ import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
 import { LikeTargetType } from '../like/like.types';
 import { AuthContext } from '../types';
+import getUnixTime from 'date-fns/getUnixTime';
 
 @Injectable()
 export class PostService {
@@ -115,7 +116,7 @@ export class PostService {
     }
     return this.dataSource.manager.save(Post, {
       ...props,
-      activeAt: props.activeAt ? new Date().getTime() : null,
+      activeAt: props.activeAt ? getUnixTime(new Date()) : null,
       categoryId: props.categoryId || null,
     });
   }
@@ -154,7 +155,7 @@ export class PostService {
       !!post.activeAt === !!activeAt
         ? post.activeAt
         : activeAt
-        ? new Date().getTime()
+        ? getUnixTime(new Date())
         : null;
     post.categoryId = categoryId ?? null;
 
@@ -172,7 +173,7 @@ export class PostService {
       throw new GraphstError('Not authorized');
     }
 
-    post.deleteAt = new Date().getTime();
+    post.deleteAt = getUnixTime(new Date());
 
     await this.dataSource.manager.save(post);
   }
@@ -192,7 +193,7 @@ export class PostService {
       throw new GraphstError('Already actioned');
     }
 
-    post.activeAt = active ? new Date().getTime() : null;
+    post.activeAt = active ? getUnixTime(new Date()) : null;
 
     await this.dataSource.manager.save(post);
   }
