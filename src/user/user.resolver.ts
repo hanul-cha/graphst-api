@@ -11,6 +11,7 @@ import { User } from './user.entity';
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
@@ -160,6 +161,14 @@ export class UserResolver {
   })
   async deleteUser(_: null, args: { id: number }) {
     return this.userService.deleteUser(args.id);
+  }
+
+  @FieldResolver({
+    parent: () => User,
+    returnType: () => GraphQLNonNull(GraphQLInt),
+  })
+  async countPost(parent: User): Promise<number> {
+    return this.userService.getCountPostByUserIdLoader.load(parent.id);
   }
 
   @FieldResolver({

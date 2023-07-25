@@ -37,6 +37,7 @@ type User {
   roles: [AuthRole!]
   questionForSearch: AuthQuestion!
   answerForSearch: String!
+  countPost: Int!
   countFollower: Int!
   countFollowing: Int!
 }

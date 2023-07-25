@@ -8,6 +8,7 @@ import { PageOption, paginate } from '../utils/pagination';
 import { userLikesByUserScope } from '../scope/userLikesByUserScope';
 import DataLoader from 'dataloader';
 import { LikeTargetType } from '../like/like.types';
+import { Post } from '../post/post.entity';
 
 @Injectable()
 export class UserService {
@@ -18,10 +19,37 @@ export class UserService {
   jwtService!: JwtService;
 
   getUserByUserIdLoader: DataLoader<number, User | null>;
+  getCountPostByUserIdLoader: DataLoader<number, number>;
 
   constructor() {
     this.getUserByUserIdLoader = new DataLoader(this._getUsers.bind(this), {
       cache: false,
+    });
+    this.getCountPostByUserIdLoader = new DataLoader(
+      this._getCountPost.bind(this),
+      {
+        cache: false,
+      }
+    );
+  }
+
+  async _getCountPost(ids: readonly number[]): Promise<number[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const countPosts = await this.dataSource
+      .createEntityManager()
+      .createQueryBuilder(Post, 'Post')
+      .select(['Post.user_id as userId', 'count(*) as count'])
+      .andWhere('Post.delete_at IS NULL')
+      .andWhere('Post.active_at IS NOT NULL')
+      .andWhere('Post.user_id IN (:...ids)', { ids: [...new Set(ids)] })
+      .groupBy('Post.user_id')
+      .getRawMany<{ userId: string; count: string }>();
+
+    return ids.map((id) => {
+      const count = countPosts.find(({ userId }) => userId === `${id}`)?.count;
+      return count ? parseInt(count) : 0;
     });
   }
 
