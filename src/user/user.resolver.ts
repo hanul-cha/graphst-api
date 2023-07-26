@@ -32,6 +32,7 @@ import {
   PageOption,
   Paginate,
 } from '../utils/pagination';
+import { Comment } from '../comment/comment.entity';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -176,7 +177,12 @@ export class UserResolver {
     returnType: () => GraphQLNonNull(getObjectSchema(User)),
     name: 'user',
   })
-  async userByPost(parent: Post): Promise<User> {
+  @FieldResolver({
+    parent: () => Comment,
+    returnType: () => GraphQLNonNull(getObjectSchema(User)),
+    name: 'user',
+  })
+  async userByUserId(parent: Post | Comment): Promise<User> {
     const user = await this.userService.getUserByUserIdLoader.load(
       +parent.userId
     );

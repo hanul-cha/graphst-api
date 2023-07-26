@@ -1,4 +1,4 @@
-import { getUnixTime, addHours } from 'date-fns';
+import { getUnixTime } from 'date-fns';
 import {
   ObjectLiteral,
   SelectQueryBuilder,
