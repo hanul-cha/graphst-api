@@ -1,9 +1,11 @@
 
 type Comment {
   contents: String!
+  user: User!
   countLike: Int!
   countUnlike: Int!
-  user: User!
+  isLike: Boolean!
+  isUnlike: Boolean!
 }
 
 enum AuthRole {
@@ -47,6 +49,7 @@ type User {
   countPost: Int!
   countFollower: Int!
   countFollowing: Int!
+  isLike: Boolean!
 }
 
 type Post {
@@ -114,6 +117,8 @@ type Mutation {
   deleteUser(id: ID!): Boolean
   toggleLikeUser(targetId: String!, like: Boolean!): Boolean
   toggleLikePost(targetId: String!, like: Boolean!): Boolean
+  toggleLikeCommentUnlike(targetId: String!, like: Boolean!): Boolean
+  toggleLikeCommentLike(targetId: String!, like: Boolean!): Boolean
   createPost(title: String!, contents: String!, categoryId: String, activeAt: Boolean): Post!
   updatePost(title: String!, contents: String!, categoryId: String, activeAt: Boolean, postId: ID!): Post!
   deletePost(id: ID!): Boolean!

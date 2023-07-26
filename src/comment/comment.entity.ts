@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from 'graphst';
-import { GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLNonNull, GraphQLString } from 'graphql';
 
 @Entity()
 @ObjectType()
@@ -20,7 +20,6 @@ export class Comment extends BaseEntity {
   })
   contents!: string;
 
-  @Field(() => GraphQLNonNull(GraphQLInt))
   @Column({
     type: Number,
     default: 0,
@@ -28,7 +27,6 @@ export class Comment extends BaseEntity {
   })
   countLike!: number;
 
-  @Field(() => GraphQLNonNull(GraphQLInt))
   @Column({
     type: Number,
     default: 0,
