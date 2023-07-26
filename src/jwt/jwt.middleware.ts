@@ -27,6 +27,7 @@ export class JwtMiddleware implements MiddlewareInterface {
       return next(propWithAuth);
     } catch (error: any) {
       if (error instanceof JsonWebTokenError) {
+        // TODO: 이거 조치를 취해야겠음 데코레이터를 통해 글로벌 미들웨어보다 먼저 처리되는 방식을 찾아야겠음
         const ignorePaths = new Set([
           'signIn',
           'signUp',
@@ -35,6 +36,8 @@ export class JwtMiddleware implements MiddlewareInterface {
           'categories',
           'posts',
           'getPost',
+          'countFollower',
+          'countPost',
         ]);
         const ignoreParents = new Set(['Post']);
         if (

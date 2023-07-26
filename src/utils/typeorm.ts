@@ -1,4 +1,4 @@
-import { getUnixTime } from 'date-fns';
+import { getUnixTime, addHours } from 'date-fns';
 import {
   ObjectLiteral,
   SelectQueryBuilder,
@@ -35,7 +35,7 @@ export const unixTimeDefaultTransformer = {
     if (!value) {
       return new Date();
     }
-    return new Date(value);
+    return new Date(value * 1000);
   },
   from: (value: Date | null) => {
     if (!value) {

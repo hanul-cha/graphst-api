@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
 import { Field, ObjectType } from 'graphst';
 import {
   BaseEntity,
@@ -62,6 +62,7 @@ export class Post extends BaseEntity {
   })
   deleteAt!: number | null;
 
+  @Field(() => GraphQLNonNull(GraphQLInt))
   @Column({
     type: 'timestamp',
     name: 'created_at',
@@ -71,6 +72,7 @@ export class Post extends BaseEntity {
   })
   createAt!: number;
 
+  @Field(() => GraphQLNonNull(GraphQLInt))
   @Column({
     type: 'timestamp',
     name: 'update_at',
