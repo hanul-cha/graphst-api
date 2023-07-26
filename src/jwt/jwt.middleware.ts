@@ -38,8 +38,10 @@ export class JwtMiddleware implements MiddlewareInterface {
           'getPost',
           'countFollower',
           'countPost',
+          'isLike',
+          'comments',
         ]);
-        const ignoreParents = new Set(['Post']);
+        const ignoreParents = new Set(['Post', 'Comment']);
         if (
           ignoreParents.has(`${props.info.parentType}`) ||
           ignorePaths.has(props.info.fieldName)

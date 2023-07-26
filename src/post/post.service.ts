@@ -90,6 +90,8 @@ export class PostService {
         column = 'Post._count_like';
       } else if (args.order === PostOrder.TITLE) {
         column = 'Post.title';
+      } else if (args.order === PostOrder.COMMENT) {
+        column = 'Post._count_comment';
       }
     }
 

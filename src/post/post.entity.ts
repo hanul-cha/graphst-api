@@ -55,6 +55,14 @@ export class Post extends BaseEntity {
   _countLike!: number;
 
   @Column({
+    type: Number,
+    name: '_count_comment',
+    default: 0,
+  })
+  /** @description order를 위한 역정규화 칼럼 */
+  _countComment!: number;
+
+  @Column({
     type: 'timestamp',
     name: 'delete_at',
     transformer: unixTimeTransformer,

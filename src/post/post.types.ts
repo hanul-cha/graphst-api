@@ -25,6 +25,7 @@ export const graphqlPostOptions = {
 export enum PostOrder {
   TITLE = 'title',
   FOLLOWER = 'follower',
+  COMMENT = 'comment',
 }
 
 export const GraphQLPostOrder = new GraphQLEnumType({
@@ -35,6 +36,9 @@ export const GraphQLPostOrder = new GraphQLEnumType({
     },
     follower: {
       value: PostOrder.FOLLOWER,
+    },
+    comment: {
+      value: PostOrder.COMMENT,
     },
   },
 });

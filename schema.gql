@@ -1,13 +1,4 @@
 
-type Comment {
-  contents: String!
-  user: User!
-  countLike: Int!
-  countUnlike: Int!
-  isLike: Boolean!
-  isUnlike: Boolean!
-}
-
 enum AuthRole {
   """일반사용자"""
   user
@@ -66,6 +57,16 @@ type Post {
   countComment: Int!
 }
 
+type Comment {
+  contents: String!
+  user: User!
+  countLike: Int!
+  countUnlike: Int!
+  isLike: Boolean!
+  isUnlike: Boolean!
+  isMyComment: Boolean!
+}
+
 type userPaginate {
   totalCount: Int!
   nodes: [User!]!
@@ -81,6 +82,7 @@ type PageInfo {
 enum PostOrder {
   title
   follower
+  comment
 }
 
 type postPaginate {
@@ -106,7 +108,7 @@ type Query {
   posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
   getPost(id: ID!): Post
   categories: [Category!]!
-  comments: commentPaginate
+  comments(perPage: Int, page: Int, after: String, order: String, asc: Boolean, postId: String): commentPaginate
 }
 
 type Mutation {
@@ -125,4 +127,6 @@ type Mutation {
   updateActiveAt(id: ID!, active: Boolean!): Boolean!
   deleteCategory(id: ID!): Boolean!
   addCategory(label: String!): Boolean!
+  createComment(postId: String!, contents: String!): Comment!
+  deleteComment(commentId: String!): Boolean!
 }
