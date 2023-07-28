@@ -1,10 +1,11 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from 'graphst';
-import { GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 
 @Entity()
 @ObjectType()
 export class Comment extends BaseEntity {
+  @Field(() => GraphQLNonNull(GraphQLID))
   @PrimaryGeneratedColumn()
   id!: number;
 

@@ -67,6 +67,16 @@ export class UserResolver {
     return user;
   }
 
+  @Query({
+    args: {
+      id: () => GraphQLNonNull(GraphQLString),
+    },
+    returnType: () => User,
+  })
+  async getUserPublic(_: null, args: { id: string }): Promise<User | null> {
+    return this.userService.getUserByUserIdLoader.load(+args.id);
+  }
+
   @Mutation({
     args: {
       userId: () => GraphQLNonNull(GraphQLString),

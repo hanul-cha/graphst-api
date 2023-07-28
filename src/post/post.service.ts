@@ -147,7 +147,7 @@ export class PostService {
       },
     });
 
-    if (userId !== `${post.id}`) {
+    if (userId !== `${post.userId}`) {
       throw new GraphstError('Only the author can edit');
     }
 

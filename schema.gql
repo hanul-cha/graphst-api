@@ -58,6 +58,7 @@ type Post {
 }
 
 type Comment {
+  id: ID!
   contents: String!
   user: User!
   countLike: Int!
@@ -105,6 +106,7 @@ type commentPaginate {
 type Query {
   users(perPage: Int, page: Int, after: String, order: String, asc: Boolean, followingId: String, followerId: String, likePostId: String): userPaginate
   getUser: User!
+  getUserPublic(id: String!): User
   posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
   getPost(id: ID!): Post
   categories: [Category!]!
