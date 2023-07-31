@@ -7,6 +7,8 @@ import { PostResolver } from './post/post.resolver';
 import { CategoryResolver } from './category/category.resolver';
 import { CommentResolver } from './comment/comment.resolver';
 
+console.log(process.env.DB_DATABASE);
+
 const dataSource = new DataSource({
   type: 'mysql',
   host: process.env.DB_HOST,
@@ -14,6 +16,7 @@ const dataSource = new DataSource({
   database: process.env.DB_DATABASE,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
+  synchronize: false,
   entities: [__dirname + '/**/*.entity.js'],
 });
 
