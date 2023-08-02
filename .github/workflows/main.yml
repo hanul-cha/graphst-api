@@ -46,4 +46,4 @@ jobs:
 
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
 
-          docker run -d -p 80:80 -e DB_PORT=${{ secrets.DB_PORT }} -e DB_DATABASE=${{ secrets.DB_DATABASE }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_HOST=${{ secrets.DB_HOST }} -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} --name my-web ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
+          docker run -d -p 80:4000 -e DB_PORT=${{ secrets.DB_PORT }} -e DB_DATABASE=${{ secrets.DB_DATABASE }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_HOST=${{ secrets.DB_HOST }} -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} --name my-web ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
