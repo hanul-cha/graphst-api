@@ -48,7 +48,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
       - name: Docker run
         run: |
           docker stop my-web && docker rm my-web && docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
