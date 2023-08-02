@@ -8,6 +8,7 @@ import { CategoryResolver } from './category/category.resolver';
 import { CommentResolver } from './comment/comment.resolver';
 
 console.log(process.env.DB_DATABASE);
+console.log(process.env.JWT_SECRET_KEY);
 
 const dataSource = new DataSource({
   type: 'mysql',
