@@ -34,7 +34,9 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Docker run
         run: |
-          docker stop my-web && docker rm my-web && docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
+          docker stop my-web || true
+          docker rm my-web || true
+          docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
 
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
 
