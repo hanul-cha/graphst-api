@@ -1,5 +1,6 @@
 {
   "name": "graphst-api",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec \"npm run build && node dist/entry.js\"",
