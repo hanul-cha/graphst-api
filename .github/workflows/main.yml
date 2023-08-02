@@ -1,0 +1,58 @@
+name: CICD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1 
+        
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }} # dockerhub name
+          password: ${{ secrets.DOCKERHUB_TOKEN }} # dockerhub password
+          
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+      - name: Generate Environment Variables File for Production
+        run: |
+          echo "VARIABLE=$VARIABLE" >> ./dir/.env
+        env:
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+
+  # 배포
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: [self-hosted, label-go] # AWS ./configure에서 사용할 label명
+    steps:
+      - name: Login to ghcr
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker run
+        run: |
+          docker stop my-web && docker rm my-web && docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
+
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
+
+          docker run -d -p 80:80 --name my-web ${{ secrets.DOCKERHUB_USERNAME }}/my-web:latest
