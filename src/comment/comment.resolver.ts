@@ -12,7 +12,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { AuthContext } from '../types';
+import { AuthContext, verifiedAuthContext } from '../types';
 import {
   GraphqlPaginate,
   PageOption,
@@ -22,8 +22,8 @@ import { Comment } from './comment.entity';
 import { Post } from '../post/post.entity';
 import { CommentService } from './comment.service';
 import { CommentOptions, graphqlCommentOptions } from './comment.types';
+import { AuthGuardMiddleware } from '../auth/auth.guard.middleware';
 
-/** @warring jwt middleware의 보호를 받지 않는 타입 */
 @Resolver(() => Comment)
 export class CommentResolver {
   @Inject(() => CommentService)
@@ -68,6 +68,7 @@ export class CommentResolver {
       postId: () => GraphQLNonNull(GraphQLString),
       contents: () => GraphQLNonNull(GraphQLString),
     },
+    middlewares: [AuthGuardMiddleware],
     returnType: () => GraphQLNonNull(getObjectSchema(Comment)),
   })
   async createComment(
@@ -76,12 +77,12 @@ export class CommentResolver {
       postId: string;
       contents: string;
     },
-    context: AuthContext
+    context: verifiedAuthContext
   ): Promise<Comment> {
     return this.commentService.createComment(
       args.postId,
       args.contents,
-      `${context.auth!.id}`
+      `${context.auth.id}`
     );
   }
 
@@ -89,6 +90,7 @@ export class CommentResolver {
     args: {
       commentId: () => GraphQLNonNull(GraphQLString),
     },
+    middlewares: [AuthGuardMiddleware],
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
   async deleteComment(
@@ -96,11 +98,11 @@ export class CommentResolver {
     args: {
       commentId: string;
     },
-    context: AuthContext
+    context: verifiedAuthContext
   ): Promise<boolean> {
     await this.commentService.deleteComment(
       args.commentId,
-      `${context.auth!.id}`
+      `${context.auth.id}`
     );
     return true;
   }

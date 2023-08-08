@@ -1,14 +1,14 @@
 import { GraphstServer } from 'graphst';
 import { DataSource } from 'typeorm';
-import { UserResolver } from './user/user.resolver';
+import { UserResolver } from './user/resolver/user.resolver';
 import { JwtMiddleware } from './jwt/jwt.middleware';
-import { LikeResolver } from './like/like.resolver';
-import { PostResolver } from './post/post.resolver';
+import { LikeResolver } from './like/resolver/like.resolver';
+import { PostResolver } from './post/resolver/post.resolver';
 import { CategoryResolver } from './category/category.resolver';
 import { CommentResolver } from './comment/comment.resolver';
-
-console.log(process.env.DB_DATABASE);
-console.log(process.env.JWT_SECRET_KEY);
+import { PostVerifiedResolver } from './post/resolver/post.verified.resolver';
+import { LikeVerifiedResolver } from './like/resolver/like.verified.resolver';
+import { UserVerifiedResolver } from './user/resolver/user.verified.resolver';
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -39,8 +39,11 @@ dataSource
       ],
       resolvers: [
         UserResolver,
+        UserVerifiedResolver,
         LikeResolver,
+        LikeVerifiedResolver,
         PostResolver,
+        PostVerifiedResolver,
         CategoryResolver,
         CommentResolver,
       ],

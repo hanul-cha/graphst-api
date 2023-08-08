@@ -27,29 +27,7 @@ export class JwtMiddleware implements MiddlewareInterface {
       return next(propWithAuth);
     } catch (error: any) {
       if (error instanceof JsonWebTokenError) {
-        // TODO: 이거 조치를 취해야겠음 데코레이터를 통해 글로벌 미들웨어보다 먼저 처리되는 방식을 찾아야겠음
-        const ignorePaths = new Set([
-          'signIn',
-          'signUp',
-          'validateQuestion',
-          'changePassword',
-          'categories',
-          'posts',
-          'getPost',
-          'countFollower',
-          'countPost',
-          'isLike',
-          'comments',
-          'getUserPublic',
-        ]);
-        const ignoreParents = new Set(['Post', 'Comment', 'User']);
-        if (
-          ignoreParents.has(`${props.info.parentType}`) ||
-          ignorePaths.has(props.info.fieldName)
-        ) {
-          return next();
-        }
-        throw new Error('token is not valid');
+        return next();
       }
       throw new Error(error);
     }

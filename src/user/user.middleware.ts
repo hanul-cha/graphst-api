@@ -9,7 +9,7 @@ export function createRolesMiddleware(roles: AuthRole[]) {
       props: GraphstApiProps,
       next: (props?: GraphstApiProps | undefined) => void
     ): void | Promise<void> {
-      if (!props.context.auth) {
+      if (!props.context.auth?.id) {
         throw new Error('lack of authority');
       }
       const userRoles = props.context.auth.roles;

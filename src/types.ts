@@ -7,6 +7,10 @@ export interface AuthContext {
   [key: string]: any;
 }
 
+export interface verifiedAuthContext extends AuthContext {
+  auth: { id: number; roles: AuthRole[] | null; name: string };
+}
+
 export interface GraphstApiProps {
   parent: any;
   args: any;

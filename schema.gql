@@ -43,6 +43,17 @@ type User {
   isLike: Boolean!
 }
 
+type Comment {
+  id: ID!
+  contents: String!
+  user: User!
+  countLike: Int!
+  countUnlike: Int!
+  isLike: Boolean!
+  isUnlike: Boolean!
+  isMyComment: Boolean!
+}
+
 type Post {
   id: ID!
   title: String!
@@ -55,17 +66,6 @@ type Post {
   activeAt: Boolean!
   category: Category
   countComment: Int!
-}
-
-type Comment {
-  id: ID!
-  contents: String!
-  user: User!
-  countLike: Int!
-  countUnlike: Int!
-  isLike: Boolean!
-  isUnlike: Boolean!
-  isMyComment: Boolean!
 }
 
 type userPaginate {
@@ -105,30 +105,30 @@ type commentPaginate {
 
 type Query {
   users(perPage: Int, page: Int, after: String, order: String, asc: Boolean, followingId: String, followerId: String, likePostId: String): userPaginate
-  getUser: User!
   getUserPublic(id: String!): User
   posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
   getPost(id: ID!): Post
   categories: [Category!]!
   comments(perPage: Int, page: Int, after: String, order: String, asc: Boolean, postId: String): commentPaginate
+  getUser: User!
 }
 
 type Mutation {
-  validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
-  changePassword(userId: String!, password: String!): Boolean
   signUp(userId: String!, password: String!, name: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): User
   signIn(id: String!, password: String!): String
-  deleteUser(id: ID!): Boolean
-  toggleLikeUser(targetId: String!, like: Boolean!): Boolean
-  toggleLikePost(targetId: String!, like: Boolean!): Boolean
-  toggleLikeCommentUnlike(targetId: String!, like: Boolean!): Boolean
-  toggleLikeCommentLike(targetId: String!, like: Boolean!): Boolean
-  createPost(title: String!, contents: String!, categoryId: String, activeAt: Boolean): Post!
-  updatePost(title: String!, contents: String!, categoryId: String, activeAt: Boolean, postId: ID!): Post!
-  deletePost(id: ID!): Boolean!
-  updateActiveAt(id: ID!, active: Boolean!): Boolean!
+  changePassword(userId: String!, password: String!): Boolean
+  validateQuestion(userId: String!, questionForSearch: AuthQuestion!, answerForSearch: String!): Boolean
   deleteCategory(id: ID!): Boolean!
   addCategory(label: String!): Boolean!
   createComment(postId: String!, contents: String!): Comment!
   deleteComment(commentId: String!): Boolean!
+  createPost(title: String!, contents: String!, categoryId: String, activeAt: Boolean): Post!
+  updatePost(title: String!, contents: String!, categoryId: String, activeAt: Boolean, postId: ID!): Post!
+  deletePost(id: ID!): Boolean!
+  updateActiveAt(id: ID!, active: Boolean!): Boolean!
+  toggleLikeUser(targetId: String!, like: Boolean!): Boolean
+  toggleLikePost(targetId: String!, like: Boolean!): Boolean
+  toggleLikeCommentUnlike(targetId: String!, like: Boolean!): Boolean
+  toggleLikeCommentLike(targetId: String!, like: Boolean!): Boolean
+  deleteUser(id: ID!): Boolean
 }
