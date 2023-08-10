@@ -7,7 +7,7 @@ export interface AuthContext {
   [key: string]: any;
 }
 
-export interface verifiedAuthContext extends AuthContext {
+export interface VerifiedAuthContext extends AuthContext {
   auth: { id: number; roles: AuthRole[] | null; name: string };
 }
 

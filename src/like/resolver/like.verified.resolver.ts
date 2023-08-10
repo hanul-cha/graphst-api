@@ -2,9 +2,9 @@ import { Inject, Mutation, Resolver } from 'graphst';
 import { Like } from '../like.entity';
 import { LikeService } from '../like.service';
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from 'graphql';
-import { LikeTargetType } from '../like.types';
-import { verifiedAuthContext } from '../../types';
+import { LikeTargetType, VerifiedLikeContext } from '../like.types';
 import { AuthGuardMiddleware } from '../../auth/auth.guard.middleware';
+import { createLikeTypeMiddleware } from '../like.middleware';
 
 @Resolver({
   key: () => Like,
@@ -19,6 +19,7 @@ export class LikeVerifiedResolver {
       targetId: () => GraphQLNonNull(GraphQLString),
       like: () => GraphQLNonNull(GraphQLBoolean),
     },
+    middlewares: [createLikeTypeMiddleware(LikeTargetType.CommentLike)],
     returnType: () => GraphQLBoolean,
     name: 'toggleLikeCommentLike',
   })
@@ -27,6 +28,7 @@ export class LikeVerifiedResolver {
       targetId: () => GraphQLNonNull(GraphQLString),
       like: () => GraphQLNonNull(GraphQLBoolean),
     },
+    middlewares: [createLikeTypeMiddleware(LikeTargetType.CommentUnlike)],
     returnType: () => GraphQLBoolean,
     name: 'toggleLikeCommentUnlike',
   })
@@ -35,6 +37,7 @@ export class LikeVerifiedResolver {
       targetId: () => GraphQLNonNull(GraphQLString),
       like: () => GraphQLNonNull(GraphQLBoolean),
     },
+    middlewares: [createLikeTypeMiddleware(LikeTargetType.Post)],
     returnType: () => GraphQLBoolean,
     name: 'toggleLikePost',
   })
@@ -43,39 +46,24 @@ export class LikeVerifiedResolver {
       targetId: () => GraphQLNonNull(GraphQLString),
       like: () => GraphQLNonNull(GraphQLBoolean),
     },
+    middlewares: [createLikeTypeMiddleware(LikeTargetType.User)],
     returnType: () => GraphQLBoolean,
     name: 'toggleLikeUser',
   })
   async toggleLike(
     _: null,
     args: { targetId: string; like: boolean },
-    ctx: verifiedAuthContext,
-    info: { fieldName: string }
+    ctx: VerifiedLikeContext
   ) {
-    const targetType =
-      info.fieldName === 'toggleLikeUser'
-        ? LikeTargetType.User
-        : info.fieldName === 'toggleLikePost'
-        ? LikeTargetType.Post
-        : info.fieldName === 'toggleLikeCommentLike'
-        ? LikeTargetType.CommentLike
-        : info.fieldName === 'toggleLikeCommentUnlike'
-        ? LikeTargetType.CommentUnlike
-        : null;
-
-    if (!targetType) {
-      throw new Error('Invalid target type by toggleLike');
-    }
-
     if (args.like) {
       await this.likeService.createLikeLink(
-        targetType,
+        ctx.likeTargetType,
         args.targetId,
         `${ctx.auth.id}`
       );
     } else {
       await this.likeService.deleteLikeLink(
-        targetType,
+        ctx.likeTargetType,
         args.targetId,
         `${ctx.auth.id}`
       );

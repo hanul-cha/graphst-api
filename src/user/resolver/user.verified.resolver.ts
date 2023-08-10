@@ -4,7 +4,7 @@ import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql';
 import { UserService } from '../user.service';
 import { AuthRole } from '../user.types';
 import { createRolesMiddleware } from '../user.middleware';
-import { verifiedAuthContext } from '../../types';
+import { VerifiedAuthContext } from '../../types';
 import { AuthGuardMiddleware } from '../../auth/auth.guard.middleware';
 
 @Resolver({
@@ -18,7 +18,7 @@ export class UserVerifiedResolver {
   @Query({
     returnType: () => GraphQLNonNull(getObjectSchema(User)),
   })
-  async getUser(_: null, __: null, context: verifiedAuthContext) {
+  async getUser(_: null, __: null, context: VerifiedAuthContext) {
     const user = await this.userService.getUserByUserIdLoader.load(
       context.auth.id
     );

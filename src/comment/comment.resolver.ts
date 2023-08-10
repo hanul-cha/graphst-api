@@ -12,7 +12,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { AuthContext, verifiedAuthContext } from '../types';
+import { AuthContext, VerifiedAuthContext } from '../types';
 import {
   GraphqlPaginate,
   PageOption,
@@ -77,7 +77,7 @@ export class CommentResolver {
       postId: string;
       contents: string;
     },
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ): Promise<Comment> {
     return this.commentService.createComment(
       args.postId,
@@ -98,7 +98,7 @@ export class CommentResolver {
     args: {
       commentId: string;
     },
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ): Promise<boolean> {
     await this.commentService.deleteComment(
       args.commentId,

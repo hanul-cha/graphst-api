@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import { PostService } from '../post.service';
 import { CategoryService } from '../../category/category.service';
-import { verifiedAuthContext } from '../../types';
+import { VerifiedAuthContext } from '../../types';
 import { CreatePostProps } from '../post.types';
 import { AuthGuardMiddleware } from '../../auth/auth.guard.middleware';
 
@@ -35,7 +35,7 @@ export class PostVerifiedResolver {
   async createPost(
     _: null,
     args: CreatePostProps,
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ): Promise<Post> {
     return this.postService.createPost({
       ...args,
@@ -56,7 +56,7 @@ export class PostVerifiedResolver {
   async updatePost(
     _: null,
     args: CreatePostProps & { postId: string },
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ): Promise<Post> {
     return this.postService.updatePost({
       ...args,
@@ -73,7 +73,7 @@ export class PostVerifiedResolver {
   async deletePost(
     _: null,
     args: { id: number },
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ) {
     await this.postService.deletePost(`${args.id}`, `${context.auth.id}`);
     return true;
@@ -89,7 +89,7 @@ export class PostVerifiedResolver {
   async updateActiveAt(
     _: null,
     args: { id: number; active: boolean },
-    context: verifiedAuthContext
+    context: VerifiedAuthContext
   ) {
     await this.postService.updateActiveAt(
       args.id,
