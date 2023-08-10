@@ -14,7 +14,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { UserService } from '../user.service';
+import { UserService, UserServiceError } from '../user.service';
 import {
   AuthQuestion,
   GraphQLAuthQuestion,
@@ -82,8 +82,8 @@ export class UserResolver {
     try {
       return await this.userService.createUser(args);
     } catch (e: any) {
-      if (e.message === '이미 사용중인 아이디 입니다.') {
-        throw new GraphstError('이미 사용중인 아이디 입니다.', 'DUP_ID');
+      if (e instanceof UserServiceError) {
+        throw new GraphstError(e.message, e.code);
       }
       throw new Error(e);
     }

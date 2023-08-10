@@ -16,6 +16,7 @@ import {
 
 @Entity()
 @Unique(['userId'])
+@Unique(['name'])
 @ObjectType()
 export class User extends BaseEntity {
   @Field(() => GraphQLNonNull(GraphQLID))

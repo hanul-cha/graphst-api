@@ -10,6 +10,14 @@ import DataLoader from 'dataloader';
 import { LikeTargetType } from '../like/like.types';
 import { Post } from '../post/post.entity';
 
+export class UserServiceError extends Error {
+  public constructor(message: string, public code: string = 'UNKNOWN') {
+    super(message);
+    this.name = 'UserServiceError';
+    Object.setPrototypeOf(this, UserServiceError.prototype);
+  }
+}
+
 @Injectable()
 export class UserService {
   @Inject(() => DataSource)
@@ -145,17 +153,43 @@ export class UserService {
   }): Promise<User> {
     const user = this.dataSource.manager.create(User, {
       ...input,
+      name: input.name.trim(),
+      userId: input.userId.trim(),
       password: await this.createPassword(input.password),
       roles: [AuthRole.USER],
     });
+
+    const dupUser = await this.dataSource.manager
+      .createQueryBuilder(User, 'User')
+      .orWhere('User.userId = :userId', { userId: user.userId })
+      .orWhere('User.name = :name', { name: user.name })
+      .getOne();
+
+    if (dupUser) {
+      if (dupUser.name.trim() === user.name.trim()) {
+        throw new UserServiceError(
+          '이미 사용중인 이름 입니다.',
+          'ER_DUP_ENTRY'
+        );
+      }
+      if (dupUser.userId.trim() === user.userId.trim()) {
+        throw new UserServiceError(
+          '이미 사용중인 아이디 입니다.',
+          'ER_DUP_ENTRY'
+        );
+      }
+    }
 
     try {
       await this.dataSource.manager.save(user);
     } catch (err: any) {
       if (err.code === 'ER_DUP_ENTRY') {
-        throw new Error('이미 사용중인 아이디 입니다.');
+        throw new UserServiceError(
+          '이미 사용중인 아이디 또는 이름 입니다.',
+          'ER_DUP_ENTRY'
+        );
       } else {
-        throw new Error(err);
+        throw err;
       }
     }
 
