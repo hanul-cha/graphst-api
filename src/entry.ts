@@ -31,6 +31,7 @@ dataSource
   })
   .finally(() => {
     const server = new GraphstServer({
+      corsOptions: process.env.CLIENT_URL,
       providers: [
         {
           key: DataSource,
