@@ -1,4 +1,4 @@
-import { FieldResolver, Inject, Resolver } from 'graphst';
+import { Context, FieldResolver, Inject, Parent, Resolver } from 'graphst';
 import { Like } from '../like.entity';
 import { LikeService } from '../like.service';
 import { User } from '../../user/user.entity';
@@ -77,8 +77,9 @@ export class LikeResolver {
     name: 'isLike',
   })
   async isLikePostByUser(
+    @Parent()
     parent: Post,
-    _: null,
+    @Context()
     context: AuthContext
   ): Promise<boolean> {
     if (!context?.auth) {
@@ -97,8 +98,9 @@ export class LikeResolver {
     name: 'isLike',
   })
   async isLikeUserByUser(
+    @Parent()
     parent: Post,
-    _: null,
+    @Context()
     context: AuthContext
   ): Promise<boolean> {
     if (!context?.auth) {
@@ -117,8 +119,9 @@ export class LikeResolver {
     name: 'isLike',
   })
   async isLikeUserByComment(
+    @Parent()
     parent: Comment,
-    _: null,
+    @Context()
     context: AuthContext
   ): Promise<boolean> {
     if (!context?.auth) {
@@ -137,8 +140,9 @@ export class LikeResolver {
     name: 'isUnlike',
   })
   async isUnLikeUserByComment(
+    @Parent()
     parent: Comment,
-    _: null,
+    @Context()
     context: AuthContext
   ): Promise<boolean> {
     if (!context?.auth) {

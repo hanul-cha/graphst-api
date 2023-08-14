@@ -1,4 +1,11 @@
-import { Inject, Mutation, Resolver, getObjectSchema } from 'graphst';
+import {
+  Args,
+  Context,
+  Inject,
+  Mutation,
+  Resolver,
+  getObjectSchema,
+} from 'graphst';
 import { Post } from '../post.entity';
 import {
   GraphQLBoolean,
@@ -33,8 +40,9 @@ export class PostVerifiedResolver {
     returnType: () => GraphQLNonNull(getObjectSchema(Post)),
   })
   async createPost(
-    _: null,
+    @Args()
     args: CreatePostProps,
+    @Context()
     context: VerifiedAuthContext
   ): Promise<Post> {
     return this.postService.createPost({
@@ -54,8 +62,9 @@ export class PostVerifiedResolver {
     returnType: () => GraphQLNonNull(getObjectSchema(Post)),
   })
   async updatePost(
-    _: null,
+    @Args()
     args: CreatePostProps & { postId: string },
+    @Context()
     context: VerifiedAuthContext
   ): Promise<Post> {
     return this.postService.updatePost({
@@ -71,8 +80,9 @@ export class PostVerifiedResolver {
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
   async deletePost(
-    _: null,
+    @Args()
     args: { id: number },
+    @Context()
     context: VerifiedAuthContext
   ) {
     await this.postService.deletePost(`${args.id}`, `${context.auth.id}`);
@@ -87,8 +97,9 @@ export class PostVerifiedResolver {
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
   async updateActiveAt(
-    _: null,
+    @Args()
     args: { id: number; active: boolean },
+    @Context()
     context: VerifiedAuthContext
   ) {
     await this.postService.updateActiveAt(

@@ -1,7 +1,10 @@
 import {
+  Args,
+  Context,
   FieldResolver,
   Inject,
   Mutation,
+  Parent,
   Query,
   Resolver,
   getObjectSchema,
@@ -41,7 +44,10 @@ export class CommentResolver {
     parent: () => Comment,
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
-  isMyComment(post: Comment, _: null, context: AuthContext): boolean {
+  isMyComment(
+    @Parent() post: Comment,
+    @Context() context: AuthContext
+  ): boolean {
     if (!context.auth) {
       return false;
     }
@@ -56,9 +62,8 @@ export class CommentResolver {
     returnType: () => GraphqlPaginate(Comment, 'comment'),
   })
   async comments(
-    _: null,
-    args: PageOption & CommentOptions,
-    context: AuthContext
+    @Args() args: PageOption & CommentOptions,
+    @Context() context: AuthContext
   ) {
     return this.commentService.commentPagination(args, context);
   }
@@ -72,11 +77,12 @@ export class CommentResolver {
     returnType: () => GraphQLNonNull(getObjectSchema(Comment)),
   })
   async createComment(
-    _: null,
+    @Args()
     args: {
       postId: string;
       contents: string;
     },
+    @Context()
     context: VerifiedAuthContext
   ): Promise<Comment> {
     return this.commentService.createComment(
@@ -94,10 +100,11 @@ export class CommentResolver {
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
   async deleteComment(
-    _: null,
+    @Args()
     args: {
       commentId: string;
     },
+    @Context()
     context: VerifiedAuthContext
   ): Promise<boolean> {
     await this.commentService.deleteComment(

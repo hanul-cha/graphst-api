@@ -1,4 +1,5 @@
 import {
+  Args,
   FieldResolver,
   GraphstError,
   Inject,
@@ -43,7 +44,7 @@ export class UserResolver {
     returnType: () => GraphqlPaginate(User, 'user'),
   })
   async users(
-    _: null,
+    @Args()
     args: PageOption & UsersOptions
   ): Promise<Paginate<User>> {
     return this.userService.userPagination(args);
@@ -55,7 +56,7 @@ export class UserResolver {
     },
     returnType: () => User,
   })
-  async getUserPublic(_: null, args: { id: string }): Promise<User | null> {
+  async getUserPublic(@Args() args: { id: string }): Promise<User | null> {
     return this.userService.getUserByUserIdLoader.load(+args.id);
   }
 
@@ -70,7 +71,7 @@ export class UserResolver {
     returnType: () => User,
   })
   async signUp(
-    _: null,
+    @Args()
     args: {
       userId: string;
       password: string;
@@ -97,7 +98,7 @@ export class UserResolver {
     returnType: () => GraphQLString,
   })
   async signIn(
-    _: null,
+    @Args()
     args: {
       id: string;
       password: string;
@@ -113,7 +114,7 @@ export class UserResolver {
     },
     returnType: () => GraphQLBoolean,
   })
-  async changePassword(_: null, args: { userId: string; password: string }) {
+  async changePassword(@Args() args: { userId: string; password: string }) {
     const { userId, password } = args;
     await this.userService.changePassword(userId, password);
 
@@ -129,7 +130,7 @@ export class UserResolver {
     returnType: () => GraphQLBoolean,
   })
   async validateQuestion(
-    _: null,
+    @Args()
     args: {
       userId: string;
       questionForSearch: AuthQuestion;

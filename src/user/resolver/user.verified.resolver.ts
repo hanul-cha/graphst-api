@@ -1,4 +1,12 @@
-import { Inject, Mutation, Query, Resolver, getObjectSchema } from 'graphst';
+import {
+  Args,
+  Context,
+  Inject,
+  Mutation,
+  Query,
+  Resolver,
+  getObjectSchema,
+} from 'graphst';
 import { User } from '../user.entity';
 import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql';
 import { UserService } from '../user.service';
@@ -18,7 +26,7 @@ export class UserVerifiedResolver {
   @Query({
     returnType: () => GraphQLNonNull(getObjectSchema(User)),
   })
-  async getUser(_: null, __: null, context: VerifiedAuthContext) {
+  async getUser(@Context() context: VerifiedAuthContext) {
     const user = await this.userService.getUserByUserIdLoader.load(
       context.auth.id
     );
@@ -36,7 +44,7 @@ export class UserVerifiedResolver {
     middlewares: [createRolesMiddleware([AuthRole.DEVELOPER])],
     returnType: () => GraphQLBoolean,
   })
-  async deleteUser(_: null, args: { id: number }) {
+  async deleteUser(@Args() args: { id: number }) {
     return this.userService.deleteUser(args.id);
   }
 }

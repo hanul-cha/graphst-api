@@ -1,4 +1,12 @@
-import { FieldResolver, Inject, Query, Resolver } from 'graphst';
+import {
+  Args,
+  Context,
+  FieldResolver,
+  Inject,
+  Parent,
+  Query,
+  Resolver,
+} from 'graphst';
 import { Post } from '../post.entity';
 import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql';
 import { PostService } from '../post.service';
@@ -34,9 +42,8 @@ export class PostResolver {
     returnType: () => GraphqlPaginate(Post, 'post'),
   })
   async posts(
-    _: null,
-    args: PageOption<PostOrder> & postOptions,
-    context: AuthContext
+    @Args() args: PageOption<PostOrder> & postOptions,
+    @Context() context: AuthContext
   ): Promise<Paginate<Post>> {
     return this.postService.postPagination(args, context);
   }
@@ -47,7 +54,7 @@ export class PostResolver {
     },
     returnType: () => Post,
   })
-  async getPost(_: null, args: { id: string }, context: AuthContext) {
+  async getPost(@Args() args: { id: string }, @Context() context: AuthContext) {
     const post = await this.postService.getPostByIdLoader.load(args.id);
 
     if (
@@ -63,7 +70,7 @@ export class PostResolver {
     parent: () => Post,
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
-  activeAt(post: Post) {
+  activeAt(@Parent() post: Post) {
     return !!post.activeAt;
   }
 

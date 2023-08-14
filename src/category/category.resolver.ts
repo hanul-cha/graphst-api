@@ -1,4 +1,11 @@
-import { Inject, Mutation, Query, Resolver, getObjectSchema } from 'graphst';
+import {
+  Args,
+  Inject,
+  Mutation,
+  Query,
+  Resolver,
+  getObjectSchema,
+} from 'graphst';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -33,7 +40,7 @@ export class CategoryResolver {
     middlewares: [createRolesMiddleware([AuthRole.MANAGER])],
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
-  async deleteCategory(_: null, args: { id: number }) {
+  async deleteCategory(@Args() args: { id: number }) {
     await this.categoryService.deleteCategory(`${args.id}`);
     return true;
   }
@@ -45,7 +52,7 @@ export class CategoryResolver {
     middlewares: [createRolesMiddleware([AuthRole.MANAGER])],
     returnType: () => GraphQLNonNull(GraphQLBoolean),
   })
-  async addCategory(_: null, args: { label: string }) {
+  async addCategory(@Args() args: { label: string }) {
     await this.categoryService.addCategory(args.label);
     return true;
   }

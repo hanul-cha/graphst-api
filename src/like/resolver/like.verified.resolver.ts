@@ -1,4 +1,4 @@
-import { Inject, Mutation, Resolver } from 'graphst';
+import { Args, Context, Inject, Mutation, Resolver } from 'graphst';
 import { Like } from '../like.entity';
 import { LikeService } from '../like.service';
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from 'graphql';
@@ -51,8 +51,9 @@ export class LikeVerifiedResolver {
     name: 'toggleLikeUser',
   })
   async toggleLike(
-    _: null,
+    @Args()
     args: { targetId: string; like: boolean },
+    @Context()
     ctx: VerifiedLikeContext
   ) {
     if (args.like) {
