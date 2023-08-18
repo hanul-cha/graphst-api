@@ -1,3 +1,15 @@
+type User {
+  id: ID!
+  userId: String!
+  name: String!
+  roles: [AuthRole!]
+  questionForSearch: AuthQuestion!
+  answerForSearch: String!
+  countPost: Int!
+  countFollower: Int!
+  countFollowing: Int!
+  isLike: Boolean!
+}
 
 enum AuthRole {
   """일반사용자"""
@@ -30,30 +42,6 @@ enum AuthQuestion {
   favorite_number
 }
 
-type User {
-  id: ID!
-  userId: String!
-  name: String!
-  roles: [AuthRole!]
-  questionForSearch: AuthQuestion!
-  answerForSearch: String!
-  countPost: Int!
-  countFollower: Int!
-  countFollowing: Int!
-  isLike: Boolean!
-}
-
-type Comment {
-  id: ID!
-  contents: String!
-  user: User!
-  countLike: Int!
-  countUnlike: Int!
-  isLike: Boolean!
-  isUnlike: Boolean!
-  isMyComment: Boolean!
-}
-
 type Post {
   id: ID!
   title: String!
@@ -68,6 +56,33 @@ type Post {
   countComment: Int!
 }
 
+
+type Comment {
+  id: ID!
+  contents: String!
+  user: User!
+  countLike: Int!
+  countUnlike: Int!
+  isLike: Boolean!
+  isUnlike: Boolean!
+  isMyComment: Boolean!
+}
+
+type Category {
+  id: ID!
+  label: String!
+}
+
+type Query {
+  users(perPage: Int, page: Int, after: String, order: String, asc: Boolean, followingId: String, followerId: String, likePostId: String): userPaginate
+  getUserPublic(id: String!): User
+  posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
+  getPost(id: ID!): Post
+  categories: [Category!]!
+  comments(perPage: Int, page: Int, after: String, order: String, asc: Boolean, postId: String): commentPaginate
+  getUser: User!
+}
+
 type userPaginate {
   totalCount: Int!
   nodes: [User!]!
@@ -80,37 +95,22 @@ type PageInfo {
   endPath: String!
 }
 
-enum PostOrder {
-  title
-  follower
-  comment
-}
-
 type postPaginate {
   totalCount: Int!
   nodes: [Post!]!
   pageInfo: PageInfo!
 }
 
-type Category {
-  id: ID!
-  label: String!
+enum PostOrder {
+  title
+  follower
+  comment
 }
 
 type commentPaginate {
   totalCount: Int!
   nodes: [Comment!]!
   pageInfo: PageInfo!
-}
-
-type Query {
-  users(perPage: Int, page: Int, after: String, order: String, asc: Boolean, followingId: String, followerId: String, likePostId: String): userPaginate
-  getUserPublic(id: String!): User
-  posts(perPage: Int, page: Int, after: String, order: PostOrder, asc: Boolean, userId: String, likeUserId: String, query: String, categoryId: String): postPaginate
-  getPost(id: ID!): Post
-  categories: [Category!]!
-  comments(perPage: Int, page: Int, after: String, order: String, asc: Boolean, postId: String): commentPaginate
-  getUser: User!
 }
 
 type Mutation {
